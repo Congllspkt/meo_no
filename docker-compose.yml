@@ -1,10 +1,11 @@
-version: "3"
+version: '3.8'
+
 services:
-  mysql_meono:
-    image: mysql
-    ports:
-      - "33306:3306"
+  db:
+    image: postgres:latest
     environment:
-      - MYSQL_ROOT_PASSWORD=meono1234
-      - MYSQL_DATABASE=meono
-    container_name: mysql_meono
+      POSTGRES_DB: meono
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: 345FSDF$#
+    ports:
+      - "5432:5432"
