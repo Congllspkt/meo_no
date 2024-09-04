@@ -1,4 +1,4 @@
 package utildata
 
-var WAITING = "WAITING"
-var PLAYING = "PLAYING"
+var WAITING = "W"
+var PLAYING = "P"
