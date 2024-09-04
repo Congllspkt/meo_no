@@ -1,0 +1,10 @@
+version: "3"
+services:
+  mysql_meono:
+    image: mysql
+    ports:
+      - "33306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=meono1234
+      - MYSQL_DATABASE=meono
+    container_name: mysql_meono

@@ -9,9 +9,7 @@ import (
 
 func main() {
 	r := gin.Default()
-
 	r.GET("/ping", getStatus)
-	
 	r.Run()
 }
 
