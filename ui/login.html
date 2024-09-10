@@ -53,7 +53,7 @@
 
         $('#myButton').click(function () {
             $.ajax({
-                url: 'http://localhost:8080/register?name=' + $('#myInput').val(),
+                url: 'http://172.25.219.197:8080/register?name=' + $('#myInput').val(),
                 type: 'GET',
                 success: function (data) {
                     localStorage.setItem("iduser", data.iduser);

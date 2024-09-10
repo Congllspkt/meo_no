@@ -82,48 +82,8 @@
 <body>
 
     <div class="container">
-        <table class="tb_user">
+        <table class="tb_user" id="userTable">
             <tbody>
-                <tr>
-                    <td data-label="Column 1">Row 1, Cell 1</td>
-                    <td data-label="Column 2">Row 1, Cell 2</td>
-                </tr>
-                <tr>
-                    <td data-label="Column 1">Row 2, Cell 1</td>
-                    <td data-label="Column 2">Row 2, Cell 2</td>
-                </tr>
-                <tr>
-                    <td data-label="Column 1">Row 3, Cell 1</td>
-                    <td data-label="Column 2">Row 3, Cell 2</td>
-                </tr>
-                <tr>
-                    <td data-label="Column 1">Row 4, Cell 1</td>
-                    <td data-label="Column 2">Row 4, Cell 2</td>
-                </tr>
-                <tr>
-                    <td data-label="Column 1">Row 5, Cell 1</td>
-                    <td data-label="Column 2">Row 5, Cell 2</td>
-                </tr>
-                <tr>
-                    <td data-label="Column 1">Row 6, Cell 1</td>
-                    <td data-label="Column 2">Row 6, Cell 2</td>
-                </tr>
-                <tr>
-                    <td data-label="Column 1">Row 7, Cell 1</td>
-                    <td data-label="Column 2">Row 7, Cell 2</td>
-                </tr>
-                <tr>
-                    <td data-label="Column 1">Row 8, Cell 1</td>
-                    <td data-label="Column 2">Row 8, Cell 2</td>
-                </tr>
-                <tr>
-                    <td data-label="Column 1">Row 9, Cell 1</td>
-                    <td data-label="Column 2">Row 9, Cell 2</td>
-                </tr>
-                <tr>
-                    <td data-label="Column 1">Row 10, Cell 1</td>
-                    <td data-label="Column 2">Row 10, Cell 2</td>
-                </tr>
             </tbody>
         </table>
         <div>
@@ -184,13 +144,23 @@
 
     function displayGame() {
         $.ajax({
-            url: 'http://localhost:8080/getStatusGame?id=' + localStorage.getItem("iduser"),
+            url: 'http://172.25.219.197:8080/getStatusGame?id=' + localStorage.getItem("iduser"),
             type: 'GET',
             success: function (data) {
-    
+                $('#userTable tbody').empty()
+                $.each(data.allUser, function (index, user) {
+                    $('#userTable tbody').append(
+                        $('<tr>').append(
+                            $('<td>').text(user.username),
+                            $('<td>').text(user.status)
+                        )
+                    );
+                });
+
+
                 if (data.statusGame == "w") {
                     $("#header_game").text(data.messageStatus)
-                } else if(data.statusUser == "d") {
+                } else if (data.statusUser == "d") {
                     $("#header_game").text(data.messageStatusUser)
                 } else {
                     $("#header_game").text("")

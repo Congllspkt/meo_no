@@ -1,0 +1,5 @@
+
+
+GET http://localhost:8080/getAllUser?id=4
+Content-Type: application/json
+

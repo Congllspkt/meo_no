@@ -24,11 +24,15 @@ func main() {
 	r.GET("/register", register)
 	r.GET("/getStatusGame", getStatusGame)
 
+
+
+
+	
+
 	r.GET("/updateWaitStatus", updateWaitStatus)
 	r.GET("/updatePlayStatus", updatePlayStatus)
 	r.GET("/updatePlayer", updatePlayer)
 
-	r.GET("/getAllUser", getAllUser)
 	r.GET("/updateArr", updateArr)
 
 	r.Run()
@@ -89,29 +93,14 @@ func getStatusGame(c *gin.Context) {
 		}
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"statusGame": statusGame,
-		"messageStatus": messageStatus,
-		"arr": arr,
-		"statusUser" : statusUser,
-		"messageStatusUser" : messageStatusUser,
-	})
-}
-
-func updateArr(c *gin.Context) {
-	db.Exec("UPDATE user_tb SET arr = $1 where id = $2", c.Query("arr"), c.Query("id"))
-}
-
-func getAllUser(c *gin.Context) {
 	rows, _ := db.Query("SELECT id, username, status  FROM user_tb where username != '' and id != ?;", c.Query("id"))
 	var users []map[string]interface{}
 	for rows.Next() {
-		var id, username, status, arr string
-		rows.Scan(&id, &username, &arr, &status)
+		var id, username, status string
+		rows.Scan(&id, &username, &status)
 		user := map[string]interface{}{
 			"id":       id,
 			"username": username,
-			"arr":      arr,
 			"status":   status,
 		}
 		users = append(users, user)
@@ -119,6 +108,15 @@ func getAllUser(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
+		"statusGame": statusGame,
+		"messageStatus": messageStatus,
+		"arr": arr,
+		"statusUser" : statusUser,
+		"messageStatusUser" : messageStatusUser,
 		"allUser": users,
 	})
+}
+
+func updateArr(c *gin.Context) {
+	db.Exec("UPDATE user_tb SET arr = $1 where id = $2", c.Query("arr"), c.Query("id"))
 }
