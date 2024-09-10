@@ -3,7 +3,6 @@ package main
 import (
 	"database/sql"
 	"fmt"
-	utildata "meo_no/utilData"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -19,18 +18,17 @@ func main() {
 
 	r := gin.Default()
 
-	r.Use(cors.Default())
-
+	r.Use(cors.New(cors.Config{
+        AllowOrigins:     []string{"http://172.25.219.197:5500"}, // Allow specific origin
+        AllowMethods:     []string{"GET", "POST", "OPTIONS"},     // Allow specific methods
+        AllowHeaders:     []string{"Origin", "Content-Type"},     // Allow specific headers
+        ExposeHeaders:    []string{"Content-Length"},              // Expose headers
+        AllowCredentials: true,
+        MaxAge:           12 * 3600, // Cache duration for preflight requests
+    }))
 	r.GET("/register", register)
 	r.GET("/getStatusGame", getStatusGame)
 
-
-
-
-	
-
-	r.GET("/updateWaitStatus", updateWaitStatus)
-	r.GET("/updatePlayStatus", updatePlayStatus)
 	r.GET("/updatePlayer", updatePlayer)
 
 	r.GET("/updateArr", updateArr)
@@ -42,7 +40,7 @@ func register(c *gin.Context) {
 	var minID int
 	var name = c.Query("name")
 	db.QueryRow("SELECT MIN(id) FROM user_tb WHERE username = ''").Scan(&minID)
-	db.Exec("UPDATE user_tb SET username = ? WHERE id = ?", name, minID)
+	db.Exec("UPDATE user_tb SET username = ?, status = 'w' WHERE id = ?", name, minID)
 
 	c.JSON(http.StatusOK, gin.H{
 		"username": name,
@@ -54,14 +52,6 @@ func updatePlayer(c *gin.Context) {
 	db.Exec("UPDATE game_tb SET playuser = $1", c.Query("p"))
 }
 
-func updateWaitStatus(c *gin.Context) {
-	db.Exec("UPDATE game_tb SET status = $1", utildata.WAITING)
-}
-
-func updatePlayStatus(c *gin.Context) {
-	db.Exec("UPDATE game_tb SET status = $1", utildata.PLAYING)
-}
-
 func getStatusGame(c *gin.Context) {
 	var status, arr, statusUser, messageStatusUser string
 	db.QueryRow("SELECT status FROM game_tb;").Scan(&status)
@@ -69,25 +59,22 @@ func getStatusGame(c *gin.Context) {
 	var messageStatus string
 	var statusGame string
 
-
-
 	if status == "w" {
 		messageStatus = "Cho game 1 xiu"
 		statusGame = "w"
 	} else {
-		messageStatus = "dang trong tran";
+		messageStatus = "dang trong tran"
 		statusGame = "p"
 
 		status = ""
 		db.QueryRow("SELECT arr, status FROM user_tb where id = ?;", c.Query("id")).Scan(&arr, &status)
-	
+
 		fmt.Print(status)
 
-
-		if(status == "p") {
+		if status == "p" {
 			messageStatusUser = "van dang choi"
 			statusUser = "p"
-		} else if (status == "d") {
+		} else if status == "d" {
 			statusUser = "d"
 			messageStatusUser = "ban thua roi"
 		}
@@ -108,12 +95,12 @@ func getStatusGame(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"statusGame": statusGame,
-		"messageStatus": messageStatus,
-		"arr": arr,
-		"statusUser" : statusUser,
-		"messageStatusUser" : messageStatusUser,
-		"allUser": users,
+		"statusGame":        statusGame,
+		"messageStatus":     messageStatus,
+		"arr":               arr,
+		"statusUser":        statusUser,
+		"messageStatusUser": messageStatusUser,
+		"allUser":           users,
 	})
 }
 
