@@ -2,3 +2,8 @@
 
 GET http://localhost:8080/register?name=Cong
 Content-Type: application/json
+
+
+GET http://localhost:8080/getAllUser?id=4
+Content-Type: application/json
+

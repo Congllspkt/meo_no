@@ -100,11 +100,10 @@ func getStatusGame(c *gin.Context) {
 
 func updateArr(c *gin.Context) {
 	db.Exec("UPDATE user_tb SET arr = $1 where id = $2", c.Query("arr"), c.Query("id"))
-	getAllUser(c)
 }
 
 func getAllUser(c *gin.Context) {
-	rows, _ := db.Query("SELECT id, username, status  FROM user_tb;")
+	rows, _ := db.Query("SELECT id, username, status  FROM user_tb where username != '' and id != ?;", c.Query("id"))
 	var users []map[string]interface{}
 	for rows.Next() {
 		var id, username, status, arr string
