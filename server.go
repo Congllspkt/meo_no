@@ -7,13 +7,20 @@ import (
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
+
+	"github.com/gin-contrib/cors"
+
 )
 
 var dsn = "root:345FSDF$#@tcp(localhost:3306)/meono"
 var db, _ = sql.Open("mysql", dsn)
 
 func main() {
+
 	r := gin.Default()
+	
+	r.Use(cors.Default())
+
 
 	r.GET("/register", register)
 
@@ -30,8 +37,12 @@ func main() {
 
 func register(c *gin.Context) {
 	var minID int
-	db.QueryRow("SELECT MIN(idn) FROM user_tb WHERE username = ''").Scan(&minID)
-	db.Exec("UPDATE user_tb SET username = ? WHERE idn = ?", c.Query("name"), minID)
+
+	var name = c.Query("name");
+	db.QueryRow("SELECT MIN(id) FROM user_tb WHERE username = ''").Scan(&minID)
+	db.Exec("UPDATE user_tb SET username = ? WHERE id = ?", name, minID)
+
+
 }
 
 func updatePlayer(c *gin.Context) {
@@ -74,22 +85,21 @@ func getGame(c *gin.Context) {
 }
 
 func updateArr(c *gin.Context) {
-	db.Exec("UPDATE user_tb SET arr = $1 where idn = $2", c.Query("arr"), c.Query("idn"))
+	db.Exec("UPDATE user_tb SET arr = $1 where id = $2", c.Query("arr"), c.Query("id"))
 	getAllUser(c)
 }
 
 func getAllUser(c *gin.Context) {
-	rows, _ := db.Query("SELECT idn, username, play  FROM user_tb where play is not null;")
+	rows, _ := db.Query("SELECT id, username, status  FROM user_tb;")
 	var users []map[string]interface{}
 	for rows.Next() {
-		var idn int
-		var username, arr, play string
-		rows.Scan(&idn, &username, &play, &arr)
+		var id, username, status, arr string
+		rows.Scan(&id, &username, &arr, &status)
 		user := map[string]interface{}{
-			"idn":   idn,
+			"id":   id,
 			"username": username,
 			"arr":      arr,
-			"play":     play,
+			"status":   status,
 		}
 		users = append(users, user)
 

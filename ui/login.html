@@ -38,14 +38,29 @@
     <input type="text" id="myInput" placeholder="name">
     <button id="myButton">Send</button>
     <div id="response" style="margin-top: 20px;"></div>
-
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>    
     
-    setInterval(() => {
-        $('#response').html('Response: ' + new Date());
+    // setInterval(() => {
+    //     $('#response').html('Response: ' + new Date());
 
-    }, 1000);
+    // }, 1000);
+
+    $('#myButton').click(function() {
+        $.ajax({
+    url: 'http://localhost:8080/register?name=' + $('#myInput').val(), 
+    type: 'GET', 
+    success: function(data) {
+        window.location.href = 'index.html';
+
+    },
+    error: function(jqXHR, textStatus, errorThrown) {
+
+    }
+});
+    });
+
+    
 
             
     </script>
