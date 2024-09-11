@@ -2,11 +2,15 @@ package main
 
 import (
 	"database/sql"
+	"fmt"
 	"net/http"
+	"strconv"
+	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
-
+	"math/rand"
 	"github.com/gin-contrib/cors"
 )
 
@@ -40,10 +44,95 @@ func startGame(c *gin.Context) {
 	// get all id nguoi choi
 	db.Exec("UPDATE user_tb set status = ''")
 	db.Exec("UPDATE user_tb set status = 'p' where username != ''")
-
-	// var initBobai = ""
-	// var ids string
 	
+	var ids string
+	db.QueryRow("SELECT GROUP_CONCAT(id) as ids FROM user_tb where username != ''").Scan(&ids)
+	parts := strings.Split(ids, ",")
+	var numbers []int
+	for _, part := range parts {
+		num, _ := strconv.Atoi(part)
+		numbers = append(numbers, num)
+	}
+	fmt.Println("ids: ",  numbers)
+
+	numberPlayers := len(numbers)
+	
+	// meodefause2 := 1
+	// meobom1 := numberPlayers - 1
+
+
+	meosee3 := 4
+	meogive4 := 4
+	meoreverse5 := 4
+	meosuffle6 := 4
+	meoskip7 := 4
+
+	arrBobai := []int{}
+	arrBobai = appendBobai(arrBobai, meosee3, 3)
+	arrBobai = appendBobai(arrBobai, meogive4, 4)
+	arrBobai = appendBobai(arrBobai, meoreverse5, 5)
+	arrBobai = appendBobai(arrBobai, meosuffle6, 6)
+	arrBobai = appendBobai(arrBobai, meoskip7, 7)
+	fmt.Println("Tao Bo Bai : ",  arrBobai)
+
+	// trom bai
+	shuffleSlice(arrBobai)
+	shuffleSlice(arrBobai)
+	shuffleSlice(arrBobai)
+	fmt.Println("Hoan Vi Bo Bai : ",  arrBobai)
+
+	// chi bai
+	for i := 0; i < numberPlayers; i++ {
+		baiUser := arrBobai[:4]
+		arrBobai = arrBobai[4:]
+
+		fmt.Println("Bo Bai : ", i, arrBobai)
+
+
+		var bai = []int{2}
+		bai = append(bai, baiUser...)
+		fmt.Println("bai user", i, bai)
+
+		// save bo bai
+		
+
+	}
+
+	fmt.Println("Bo Bai : ", arrBobai)
+
+
+
+
+
+
+
+
+
+
+
+	
+
+
+
+
+
+
+	
+}
+
+func shuffleSlice(arr []int) {
+	rand.Seed(time.Now().UnixNano()) 
+	for i := len(arr) - 1; i > 0; i-- {
+		j := rand.Intn(i + 1)
+		arr[i], arr[j] = arr[j], arr[i]
+	}
+}
+
+func appendBobai(arrBobai []int, n int, index int) [] int{
+	for i := 0; i < n; i++ {
+		arrBobai = append(arrBobai, index)
+	}
+	return arrBobai
 }
 
 func register(c *gin.Context) {
