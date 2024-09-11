@@ -54,7 +54,7 @@ func startGame(c *gin.Context) {
 	numberPlayers := len(numbers)
 	
 	// meodefause2 := 1
-	// meobom1 := numberPlayers - 1
+	meobom1 := numberPlayers - 1
 
 
 	meosee3 := 4
@@ -95,6 +95,12 @@ func startGame(c *gin.Context) {
 	}
 
 	fmt.Println("Bo Bai : ", arrBobai)
+
+	arrBobai = append(arrBobai, 2)
+	arrBobai = appendBobai(arrBobai, meobom1, 1)
+
+
+
 	db.Exec("UPDATE game_tb SET bobai = ?", joinIntSlice(arrBobai))
 
 
