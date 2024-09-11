@@ -33,8 +33,6 @@ func main() {
 	r.GET("/getStatusGame", getStatusGame)
 	r.GET("/startGame", startGame)
 
-	r.GET("/updatePlayer", updatePlayer)
-
 	r.Run()
 }
 
@@ -93,11 +91,11 @@ func startGame(c *gin.Context) {
 
 		// save arr
 		joinbai := joinIntSlice(bai)
-		db.Exec("UPDATE user_tb SET arr = $1 where id = $2", joinbai, numbers[i])
+		db.Exec("UPDATE user_tb SET arr = ? where id = ?", joinbai, numbers[i])
 	}
 
 	fmt.Println("Bo Bai : ", arrBobai)
-	db.Exec("UPDATE game_tb SET arr = $1", joinIntSlice(arrBobai))
+	db.Exec("UPDATE game_tb SET bobai = ?", joinIntSlice(arrBobai))
 
 
 
@@ -154,10 +152,6 @@ func register(c *gin.Context) {
 		"iduser":   minID,
 	})
 
-}
-
-func updatePlayer(c *gin.Context) {
-	db.Exec("UPDATE game_tb SET playuser = $1", c.Query("p"))
 }
 
 func getStatusGame(c *gin.Context) {
