@@ -35,8 +35,6 @@ func main() {
 
 	r.GET("/updatePlayer", updatePlayer)
 
-	r.GET("/updateArr", updateArr)
-
 	r.Run()
 }
 
@@ -93,24 +91,19 @@ func startGame(c *gin.Context) {
 		bai = append(bai, baiUser...)
 		fmt.Println("bai user", i, bai)
 
-		// save bo bai
-		
-
+		// save arr
+		joinbai := joinIntSlice(bai)
+		db.Exec("UPDATE user_tb SET arr = $1 where id = $2", joinbai, numbers[i])
 	}
 
 	fmt.Println("Bo Bai : ", arrBobai)
+	db.Exec("UPDATE game_tb SET arr = $1", joinIntSlice(arrBobai))
 
 
 
 
 
 
-
-
-
-
-
-	
 
 
 
@@ -118,6 +111,21 @@ func startGame(c *gin.Context) {
 
 
 	
+
+
+
+
+
+
+	
+}
+
+func joinIntSlice(numbers []int) string {
+	var stringNumbers []string
+	for _, num := range numbers {
+		stringNumbers = append(stringNumbers, strconv.Itoa(num))
+	}
+	return strings.Join(stringNumbers, ",")
 }
 
 func shuffleSlice(arr []int) {
@@ -199,8 +207,4 @@ func getStatusGame(c *gin.Context) {
 		"messageStatusUser": messageStatusUser,
 		"allUser":           users,
 	})
-}
-
-func updateArr(c *gin.Context) {
-	db.Exec("UPDATE user_tb SET arr = $1 where id = $2", c.Query("arr"), c.Query("id"))
 }
