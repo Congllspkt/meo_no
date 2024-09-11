@@ -98,6 +98,9 @@ func startGame(c *gin.Context) {
 
 	arrBobai = append(arrBobai, 2)
 	arrBobai = appendBobai(arrBobai, meobom1, 1)
+	shuffleSlice(arrBobai)
+	shuffleSlice(arrBobai)
+	shuffleSlice(arrBobai)
 
 
 
