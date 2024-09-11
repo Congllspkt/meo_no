@@ -2,7 +2,6 @@ package main
 
 import (
 	"database/sql"
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -19,21 +18,32 @@ func main() {
 	r := gin.Default()
 
 	r.Use(cors.New(cors.Config{
-        AllowOrigins:     []string{"http://172.25.219.197:5500"}, // Allow specific origin
-        AllowMethods:     []string{"GET", "POST", "OPTIONS"},     // Allow specific methods
-        AllowHeaders:     []string{"Origin", "Content-Type"},     // Allow specific headers
-        ExposeHeaders:    []string{"Content-Length"},              // Expose headers
-        AllowCredentials: true,
-        MaxAge:           12 * 3600, // Cache duration for preflight requests
-    }))
+		AllowOrigins:     []string{"http://172.25.219.197:5500"}, // Allow specific origin
+		AllowMethods:     []string{"GET", "POST", "OPTIONS"},     // Allow specific methods
+		AllowHeaders:     []string{"Origin", "Content-Type"},     // Allow specific headers
+		ExposeHeaders:    []string{"Content-Length"},             // Expose headers
+		AllowCredentials: true,
+		MaxAge:           12 * 3600, // Cache duration for preflight requests
+	}))
 	r.GET("/register", register)
 	r.GET("/getStatusGame", getStatusGame)
+	r.GET("/startGame", startGame)
 
 	r.GET("/updatePlayer", updatePlayer)
 
 	r.GET("/updateArr", updateArr)
 
 	r.Run()
+}
+
+func startGame(c *gin.Context) {
+	// get all id nguoi choi
+	db.Exec("UPDATE user_tb set status = ''")
+	db.Exec("UPDATE user_tb set status = 'p' where username != ''")
+
+	// var initBobai = ""
+	// var ids string
+	
 }
 
 func register(c *gin.Context) {
@@ -44,6 +54,7 @@ func register(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"username": name,
+		"iduser":   minID,
 	})
 
 }
@@ -68,9 +79,6 @@ func getStatusGame(c *gin.Context) {
 
 		status = ""
 		db.QueryRow("SELECT arr, status FROM user_tb where id = ?;", c.Query("id")).Scan(&arr, &status)
-
-		fmt.Print(status)
-
 		if status == "p" {
 			messageStatusUser = "van dang choi"
 			statusUser = "p"

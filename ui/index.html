@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-    <title>Responsive Table with Image</title>
+    <title>game play</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -95,40 +95,40 @@
     <p id="info_user"></p>
     <table>
         <tr>
-            <td data-label="Column 1"><img src="img/1.jpg"></td>
-            <td data-label="Column 2"><img src="img/2.jpg"></td>
-            <td data-label="Column 2"><img src="img/3.jpg"></td>
-            <td data-label="Column 2"><img src="img/4.jpg"></td>
-            <td data-label="Column 2"><img src="img/5.jpg"></td>
-            <td data-label="Column 2"><img src="img/6.jpg"></td>
-            <td data-label="Column 2"><img src="img/7.jpg"></td>
-            <td data-label="Column 7"><img src="https://via.placeholder.com/200"></td>
-            <td data-label="Column 9"><img src="https://via.placeholder.com/200"></td>
-            <td data-label="Column 10"><img src="https://via.placeholder.com/200"></td>
+            <td><img id="b1" src="https://via.placeholder.com/200"></td>
+            <td><img id="b2" src="https://via.placeholder.com/200"></td>
+            <td><img id="b3" src="https://via.placeholder.com/200"></td>
+            <td><img id="b4" src="https://via.placeholder.com/200"></td>
+            <td><img id="b5" src="https://via.placeholder.com/200"></td>
+            <td><img id="b6" src="https://via.placeholder.com/200"></td>
+            <td><img id="b7" src="https://via.placeholder.com/200"></td>
+            <td><img id="b8" src="https://via.placeholder.com/200"></td>
+            <td><img id="b9" src="https://via.placeholder.com/200"></td>
+            <td ><img id="b10" src="https://via.placeholder.com/200"></td>
         </tr>
         <tr>
-            <td data-label="Column 1"><img src="https://via.placeholder.com/200"></td>
-            <td data-label="Column 2"><img src="https://via.placeholder.com/200"></td>
-            <td data-label="Column 3"><img src="https://via.placeholder.com/200"></td>
-            <td data-label="Column 4"><img src="https://via.placeholder.com/200"></td>
-            <td data-label="Column 5"><img src="https://via.placeholder.com/200"></td>
-            <td data-label="Column 6"><img src="https://via.placeholder.com/200"></td>
-            <td data-label="Column 7"><img src="https://via.placeholder.com/200"></td>
-            <td data-label="Column 8"><img src="https://via.placeholder.com/200"></td>
-            <td data-label="Column 9"><img src="https://via.placeholder.com/200"></td>
-            <td data-label="Column 10"><img src="https://via.placeholder.com/200"></td>
+            <td ><img id="b11" src="https://via.placeholder.com/200"></td>
+            <td ><img id="b12" src="https://via.placeholder.com/200"></td>
+            <td ><img id="b13" src="https://via.placeholder.com/200"></td>
+            <td ><img id="b14" src="https://via.placeholder.com/200"></td>
+            <td ><img id="b15" src="https://via.placeholder.com/200"></td>
+            <td ><img id="b16" src="https://via.placeholder.com/200"></td>
+            <td ><img id="b17" src="https://via.placeholder.com/200"></td>
+            <td ><img id="b18" src="https://via.placeholder.com/200"></td>
+            <td ><img id="b19" src="https://via.placeholder.com/200"></td>
+            <td ><img id="b20" src="https://via.placeholder.com/200"></td>
         </tr>
         <tr>
-            <td data-label="Column 1"><img src="https://via.placeholder.com/200"></td>
-            <td data-label="Column 2"><img src="https://via.placeholder.com/200"></td>
-            <td data-label="Column 3"><img src="https://via.placeholder.com/200"></td>
-            <td data-label="Column 4"><img src="https://via.placeholder.com/200"></td>
-            <td data-label="Column 5"><img src="https://via.placeholder.com/200"></td>
-            <td data-label="Column 6"><img src="https://via.placeholder.com/200"></td>
-            <td data-label="Column 7"><img src="https://via.placeholder.com/200"></td>
-            <td data-label="Column 8"><img src="https://via.placeholder.com/200"></td>
-            <td data-label="Column 9"><img src="https://via.placeholder.com/200"></td>
-            <td data-label="Column 10"><img src="https://via.placeholder.com/200"></td>
+            <td ><img id="b21" src="https://via.placeholder.com/200"></td>
+            <td ><img id="b22" src="https://via.placeholder.com/200"></td>
+            <td ><img id="b23" src="https://via.placeholder.com/200"></td>
+            <td ><img id="b24" src="https://via.placeholder.com/200"></td>
+            <td ><img id="b25" src="https://via.placeholder.com/200"></td>
+            <td ><img id="b26" src="https://via.placeholder.com/200"></td>
+            <td ><img id="b27" src="https://via.placeholder.com/200"></td>
+            <td ><img id="b28" src="https://via.placeholder.com/200"></td>
+            <td ><img id="b29" src="https://via.placeholder.com/200"></td>
+            <td ><img id="b30" src="https://via.placeholder.com/200"></td>
         </tr>
     </table>
 
@@ -164,6 +164,20 @@
                     $("#header_game").text(data.messageStatusUser)
                 } else {
                     $("#header_game").text("")
+                    let numArray = data.arr.split(",").map(Number);
+
+                    for(var i = 1; i<=30; i++) {
+                        $('#b'+i).attr('src', 'https://via.placeholder.com/200');
+                    }
+
+                    var lenArr = numArray.length
+                    for(var i = 1; i<=lenArr; i++) {
+                        $('#b'+i).attr('src', "img/"+numArray[i-1]+".jpg");
+                    }
+
+
+
+
                 }
             },
             error: function (jqXHR, textStatus, errorThrown) {

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>manager</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        #response {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
+        button {
+            padding: 10px 15px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+
+    <button id="ajaxButton">start game</button>
+
+    <script>
+        $(document).ready(function() {
+            $('#ajaxButton').click(function() {
+                $.ajax({
+                    url: 'http://172.25.219.197:8080/startGame', // Example API endpoint
+                    method: 'GET',
+                    success: function(data) {
+                    },
+                    error: function(err) {
+                    }
+                });
+            });
+        });
+    </script>
+
+</body>
+</html>
