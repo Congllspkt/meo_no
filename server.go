@@ -8,10 +8,11 @@ import (
 	"strings"
 	"time"
 
+	"math/rand"
+
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
-	"math/rand"
 )
 
 var dsn = "root:345FSDF$#@tcp(localhost:3306)/meono"
@@ -22,18 +23,64 @@ func main() {
 	r := gin.Default()
 
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://172.25.219.197:5500"}, // Allow specific origin
-		AllowMethods:     []string{"GET", "POST", "OPTIONS"},     // Allow specific methods
-		AllowHeaders:     []string{"Origin", "Content-Type"},     // Allow specific headers
-		ExposeHeaders:    []string{"Content-Length"},             // Expose headers
+		AllowOrigins:     []string{"*"},                      // Allow specific origin
+		AllowMethods:     []string{"GET", "POST", "OPTIONS"}, // Allow specific methods
+		AllowHeaders:     []string{"Origin", "Content-Type"}, // Allow specific headers
+		ExposeHeaders:    []string{"Content-Length"},         // Expose headers
 		AllowCredentials: true,
 		MaxAge:           12 * 3600, // Cache duration for preflight requests
 	}))
 	r.GET("/register", register)
 	r.GET("/getStatusGame", getStatusGame)
 	r.GET("/startGame", startGame)
+	r.GET("/skip", skip)
 
 	r.Run()
+}
+
+func skip(c *gin.Context) {
+	var ids string
+	var next int
+	db.QueryRow("SELECT GROUP_CONCAT(id) as ids FROM user_tb where username != ''").Scan(&ids)
+
+	var numbers = convertStringtoArray(ids)
+
+	for i, value := range numbers {
+		if strconv.Itoa(value) == c.Query("id") {
+			if i == len(ids)-1 {
+				next = 0
+			} else {
+				next = numbers[i+1]
+			}
+		}
+	}
+	db.Exec("UPDATE game_tb SET playuser = ?", next)
+
+	var arr string
+	db.QueryRow("SELECT arr FROM user_tb where id = ?;", c.Query("id")).Scan(&arr)
+	bobaiuser := convertStringtoArray(arr)
+	arrNew := removeOne(bobaiuser, 7)
+	db.Exec("UPDATE user_tb set arr = ? where id = ?", joinIntSlice(arrNew), c.Query("id"))
+
+}
+
+func removeOne(arr []int, num int) []int {
+	for i, value := range arr {
+		if value == num {
+			return append(arr[:i], arr[i+1:]...)
+		}
+	}
+	return arr 
+}
+
+func convertStringtoArray(ids string) []int{
+	parts := strings.Split(ids, ",")
+	var numbers []int
+	for _, part := range parts {
+		num, _ := strconv.Atoi(part)
+		numbers = append(numbers, num)
+	}
+	return numbers
 }
 
 func startGame(c *gin.Context) {
@@ -43,12 +90,7 @@ func startGame(c *gin.Context) {
 
 	var ids string
 	db.QueryRow("SELECT GROUP_CONCAT(id) as ids FROM user_tb where username != ''").Scan(&ids)
-	parts := strings.Split(ids, ",")
-	var numbers []int
-	for _, part := range parts {
-		num, _ := strconv.Atoi(part)
-		numbers = append(numbers, num)
-	}
+	var numbers = convertStringtoArray(ids)
 	fmt.Println("ids: ", numbers)
 
 	numberPlayers := len(numbers)
@@ -171,7 +213,7 @@ func getStatusGame(c *gin.Context) {
 		}
 	}
 
-	rows, _ := db.Query("SELECT id, username, status  FROM user_tb where username != '' and id != ?;", c.Query("id"))
+	rows, _ := db.Query("SELECT id, username, status  FROM user_tb where username != '';")
 	var users []map[string]interface{}
 	for rows.Next() {
 		var id, username, status string
