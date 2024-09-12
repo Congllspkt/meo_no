@@ -8,10 +8,10 @@ import (
 	"strings"
 	"time"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
 	"math/rand"
-	"github.com/gin-contrib/cors"
 )
 
 var dsn = "root:345FSDF$#@tcp(localhost:3306)/meono"
@@ -40,7 +40,7 @@ func startGame(c *gin.Context) {
 	// get all id nguoi choi
 	db.Exec("UPDATE user_tb set status = ''")
 	db.Exec("UPDATE user_tb set status = 'p' where username != ''")
-	
+
 	var ids string
 	db.QueryRow("SELECT GROUP_CONCAT(id) as ids FROM user_tb where username != ''").Scan(&ids)
 	parts := strings.Split(ids, ",")
@@ -49,19 +49,18 @@ func startGame(c *gin.Context) {
 		num, _ := strconv.Atoi(part)
 		numbers = append(numbers, num)
 	}
-	fmt.Println("ids: ",  numbers)
+	fmt.Println("ids: ", numbers)
 
 	numberPlayers := len(numbers)
-	
+
 	// meodefause2 := 1
 	meobom1 := numberPlayers - 1
 
-
-	meosee3 := 4
-	meogive4 := 4
-	meoreverse5 := 4
-	meosuffle6 := 4
-	meoskip7 := 4
+	meosee3 := 6
+	meogive4 := 6
+	meoreverse5 := 6
+	meosuffle6 := 6
+	meoskip7 := 6
 
 	arrBobai := []int{}
 	arrBobai = appendBobai(arrBobai, meosee3, 3)
@@ -69,13 +68,13 @@ func startGame(c *gin.Context) {
 	arrBobai = appendBobai(arrBobai, meoreverse5, 5)
 	arrBobai = appendBobai(arrBobai, meosuffle6, 6)
 	arrBobai = appendBobai(arrBobai, meoskip7, 7)
-	fmt.Println("Tao Bo Bai : ",  arrBobai)
+	fmt.Println("Tao Bo Bai : ", arrBobai)
 
 	// trom bai
 	shuffleSlice(arrBobai)
 	shuffleSlice(arrBobai)
 	shuffleSlice(arrBobai)
-	fmt.Println("Hoan Vi Bo Bai : ",  arrBobai)
+	fmt.Println("Hoan Vi Bo Bai : ", arrBobai)
 
 	// chi bai
 	for i := 0; i < numberPlayers; i++ {
@@ -83,7 +82,6 @@ func startGame(c *gin.Context) {
 		arrBobai = arrBobai[4:]
 
 		fmt.Println("Bo Bai : ", i, arrBobai)
-
 
 		var bai = []int{2}
 		bai = append(bai, baiUser...)
@@ -102,29 +100,14 @@ func startGame(c *gin.Context) {
 	shuffleSlice(arrBobai)
 	shuffleSlice(arrBobai)
 
+	db.Exec("UPDATE game_tb SET bobai = ?, playuser = ?", joinIntSlice(arrBobai), getRandomElement(numbers))
 
+}
 
-	db.Exec("UPDATE game_tb SET bobai = ?", joinIntSlice(arrBobai))
-
-
-
-
-
-
-
-
-
-
-
-
-	
-
-
-
-
-
-
-	
+func getRandomElement(arr []int) int {
+	rand.Seed(time.Now().UnixNano())
+	randomIndex := rand.Intn(len(arr))
+	return arr[randomIndex]
 }
 
 func joinIntSlice(numbers []int) string {
@@ -136,14 +119,14 @@ func joinIntSlice(numbers []int) string {
 }
 
 func shuffleSlice(arr []int) {
-	rand.Seed(time.Now().UnixNano()) 
+	rand.Seed(time.Now().UnixNano())
 	for i := len(arr) - 1; i > 0; i-- {
 		j := rand.Intn(i + 1)
 		arr[i], arr[j] = arr[j], arr[i]
 	}
 }
 
-func appendBobai(arrBobai []int, n int, index int) [] int{
+func appendBobai(arrBobai []int, n int, index int) []int {
 	for i := 0; i < n; i++ {
 		arrBobai = append(arrBobai, index)
 	}
@@ -164,8 +147,8 @@ func register(c *gin.Context) {
 }
 
 func getStatusGame(c *gin.Context) {
-	var status, arr, statusUser, messageStatusUser string
-	db.QueryRow("SELECT status FROM game_tb;").Scan(&status)
+	var status, arr, statusUser, messageStatusUser, playuser string
+	db.QueryRow("SELECT status, playuser FROM game_tb;").Scan(&status, &playuser)
 
 	var messageStatus string
 	var statusGame string
@@ -209,5 +192,6 @@ func getStatusGame(c *gin.Context) {
 		"statusUser":        statusUser,
 		"messageStatusUser": messageStatusUser,
 		"allUser":           users,
+		"playUser":          playuser,
 	})
 }

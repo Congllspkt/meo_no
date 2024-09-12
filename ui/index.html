@@ -92,7 +92,8 @@
         </div>
     </div>
 
-    <p id="info_user"></p>
+    <div id="info_user"></div>
+    <div id="toiluot" style="color: red;"></div>
     <table>
         <tr>
             <td><img id="b1" src="https://via.placeholder.com/200"></td>
@@ -104,31 +105,31 @@
             <td><img id="b7" src="https://via.placeholder.com/200"></td>
             <td><img id="b8" src="https://via.placeholder.com/200"></td>
             <td><img id="b9" src="https://via.placeholder.com/200"></td>
-            <td ><img id="b10" src="https://via.placeholder.com/200"></td>
+            <td><img id="b10" src="https://via.placeholder.com/200"></td>
         </tr>
         <tr>
-            <td ><img id="b11" src="https://via.placeholder.com/200"></td>
-            <td ><img id="b12" src="https://via.placeholder.com/200"></td>
-            <td ><img id="b13" src="https://via.placeholder.com/200"></td>
-            <td ><img id="b14" src="https://via.placeholder.com/200"></td>
-            <td ><img id="b15" src="https://via.placeholder.com/200"></td>
-            <td ><img id="b16" src="https://via.placeholder.com/200"></td>
-            <td ><img id="b17" src="https://via.placeholder.com/200"></td>
-            <td ><img id="b18" src="https://via.placeholder.com/200"></td>
-            <td ><img id="b19" src="https://via.placeholder.com/200"></td>
-            <td ><img id="b20" src="https://via.placeholder.com/200"></td>
+            <td><img id="b11" src="https://via.placeholder.com/200"></td>
+            <td><img id="b12" src="https://via.placeholder.com/200"></td>
+            <td><img id="b13" src="https://via.placeholder.com/200"></td>
+            <td><img id="b14" src="https://via.placeholder.com/200"></td>
+            <td><img id="b15" src="https://via.placeholder.com/200"></td>
+            <td><img id="b16" src="https://via.placeholder.com/200"></td>
+            <td><img id="b17" src="https://via.placeholder.com/200"></td>
+            <td><img id="b18" src="https://via.placeholder.com/200"></td>
+            <td><img id="b19" src="https://via.placeholder.com/200"></td>
+            <td><img id="b20" src="https://via.placeholder.com/200"></td>
         </tr>
         <tr>
-            <td ><img id="b21" src="https://via.placeholder.com/200"></td>
-            <td ><img id="b22" src="https://via.placeholder.com/200"></td>
-            <td ><img id="b23" src="https://via.placeholder.com/200"></td>
-            <td ><img id="b24" src="https://via.placeholder.com/200"></td>
-            <td ><img id="b25" src="https://via.placeholder.com/200"></td>
-            <td ><img id="b26" src="https://via.placeholder.com/200"></td>
-            <td ><img id="b27" src="https://via.placeholder.com/200"></td>
-            <td ><img id="b28" src="https://via.placeholder.com/200"></td>
-            <td ><img id="b29" src="https://via.placeholder.com/200"></td>
-            <td ><img id="b30" src="https://via.placeholder.com/200"></td>
+            <td><img id="b21" src="https://via.placeholder.com/200"></td>
+            <td><img id="b22" src="https://via.placeholder.com/200"></td>
+            <td><img id="b23" src="https://via.placeholder.com/200"></td>
+            <td><img id="b24" src="https://via.placeholder.com/200"></td>
+            <td><img id="b25" src="https://via.placeholder.com/200"></td>
+            <td><img id="b26" src="https://via.placeholder.com/200"></td>
+            <td><img id="b27" src="https://via.placeholder.com/200"></td>
+            <td><img id="b28" src="https://via.placeholder.com/200"></td>
+            <td><img id="b29" src="https://via.placeholder.com/200"></td>
+            <td><img id="b30" src="https://via.placeholder.com/200"></td>
         </tr>
     </table>
 
@@ -140,21 +141,39 @@
     $("#info_user").text("name: " + name)
     setInterval(() => {
         displayGame();
-    }, 3000);
+    }, 1000);
 
     function displayGame() {
         $.ajax({
             url: 'http://172.25.219.197:8080/getStatusGame?id=' + localStorage.getItem("iduser"),
             type: 'GET',
             success: function (data) {
+
+                var toiLuot = ""
+                if (data.playUser == localStorage.getItem("iduser") + "") {
+                    $("#toiluot").text("toi luot")
+                } else {
+                    $("#toiluot").text("")
+                }
                 $('#userTable tbody').empty()
+
+
                 $.each(data.allUser, function (index, user) {
-                    $('#userTable tbody').append(
-                        $('<tr>').append(
-                            $('<td>').text(user.username),
-                            $('<td>').text(user.status)
-                        )
-                    );
+                    if (user.id == data.playUser + "") {
+                        $('#userTable tbody').append(
+                            $('<tr>').append(
+                                $('<td>').text(user.username),
+                                $('<td>').text("dang danh").css('color', 'red')
+                            )
+                        );
+                    } else {
+                        $('#userTable tbody').append(
+                            $('<tr>').append(
+                                $('<td>').text(user.username),
+                                $('<td>').text("")
+                            )
+                        );
+                    }
                 });
 
 
@@ -166,13 +185,13 @@
                     $("#header_game").text("")
                     let numArray = data.arr.split(",").map(Number);
 
-                    for(var i = 1; i<=30; i++) {
-                        $('#b'+i).attr('src', 'https://via.placeholder.com/200');
+                    for (var i = 1; i <= 30; i++) {
+                        $('#b' + i).attr('src', 'https://via.placeholder.com/200');
                     }
 
                     var lenArr = numArray.length
-                    for(var i = 1; i<=lenArr; i++) {
-                        $('#b'+i).attr('src', "img/"+numArray[i-1]+".jpg");
+                    for (var i = 1; i <= lenArr; i++) {
+                        $('#b' + i).attr('src', "img/" + numArray[i - 1] + ".jpg");
                     }
 
 
