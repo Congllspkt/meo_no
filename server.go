@@ -35,14 +35,29 @@ func main() {
 	r.GET("/register", register)
 	r.GET("/getStatusGame", getStatusGame)
 	r.GET("/startGame", startGame)
+	r.GET("/sortBai", sortBai)
+
 
 	r.GET("/skip", skip)
-	r.GET("/sortBai", sortBai)
 	r.GET("/reverse", reverse)
+	r.GET("/rutbai", reverse)
 
 	r.Run()
 }
+func rutbai(c *gin.Context) {
+	if !checkID(c.Query("id")) {
+		c.Abort()
+		return
+	}
 
+	var arr string
+	db.QueryRow("SELECT arr FROM game_tb;").Scan(&arr)
+	bobaiuser := convertStringtoArray(arr)
+	// todo
+	db.Exec("UPDATE user_tb set arr = ? where id = ?", joinIntSlice(bobaiuser), c.Query("id"))
+
+
+}
 func reverse(c *gin.Context) {
 	if !checkID(c.Query("id")) {
 		c.Abort()
