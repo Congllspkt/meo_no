@@ -146,6 +146,8 @@
         const bai = ev.target.src.split('/').pop().split('.')[0];
         console.log(bai)
 
+        
+
         if (bai == 7) {
             $.ajax({
                 url: 'http://172.25.219.197:8080/skip?id=' + localStorage.getItem("iduser"),

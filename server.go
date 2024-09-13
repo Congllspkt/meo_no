@@ -34,8 +34,14 @@ func main() {
 	r.GET("/getStatusGame", getStatusGame)
 	r.GET("/startGame", startGame)
 	r.GET("/skip", skip)
+	r.GET("/reverse", reverse)
 
 	r.Run()
+}
+
+func reverse(c *gin.Context) {
+	db.Exec("UPDATE game_tb SET playuser = -playuser")
+	skip(c)
 }
 
 func skip(c *gin.Context) {
@@ -43,15 +49,21 @@ func skip(c *gin.Context) {
 	var next int
 	db.QueryRow("SELECT GROUP_CONCAT(id) as ids FROM user_tb where username != ''").Scan(&ids)
 
+	var rote int
+	db.QueryRow("SELECT rote FROM game_tb").Scan(&rote)
 	var numbers = convertStringtoArray(ids)
 
 	for i, value := range numbers {
 		if strconv.Itoa(value) == c.Query("id") {
-			if i == len(ids)-1 {
-				next = 0
+			
+			if rote == 1 && i == len(numbers) -1 {
+				next = numbers[0]
+			} else if rote == -1 && i == 0 {
+				next = numbers[len(numbers) -1]
 			} else {
 				next = numbers[i+1]
 			}
+			break;
 		}
 	}
 	db.Exec("UPDATE game_tb SET playuser = ?", next)
@@ -61,7 +73,6 @@ func skip(c *gin.Context) {
 	bobaiuser := convertStringtoArray(arr)
 	arrNew := removeOne(bobaiuser, 7)
 	db.Exec("UPDATE user_tb set arr = ? where id = ?", joinIntSlice(arrNew), c.Query("id"))
-
 }
 
 func removeOne(arr []int, num int) []int {
