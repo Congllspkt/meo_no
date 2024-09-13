@@ -15,7 +15,6 @@
             background-color: #f4f4f4;
             display: flex;
             flex-direction: column;
-            align-items: center;
         }
 
         .container {
@@ -94,7 +93,9 @@
     </div>
 
     <div id="info_user"></div>
+
     <div id="toiluot" style="color: red;"></div>
+    <div><button id="btnSort">sort</button></div>
     <table>
         <tr>
             <td><img draggable="true" ondragstart="drag(event)" id="b1" src="https://via.placeholder.com/200"></td>
@@ -138,20 +139,24 @@
 
 <script>
 
+    $('#btnSort').click(function () {
+        callajax('http://172.25.219.197:8080/sortBai?id=' + localStorage.getItem("iduser"))
+    })
+
     function allowDrop(ev) {
 
     }
 
     function callajax(url) {
         $.ajax({
-                url: url,
-                type: 'GET',
-                success: function (data) {
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
+            url: url,
+            type: 'GET',
+            success: function (data) {
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
 
-                }
-            });
+            }
+        });
     }
 
     function drag(ev) {
@@ -165,8 +170,6 @@
         } else if (bai == 5) {
             callajax('http://172.25.219.197:8080/reverse?id=' + localStorage.getItem("iduser"))
         }
-
-
     }
 
     var name = localStorage.getItem("username")
