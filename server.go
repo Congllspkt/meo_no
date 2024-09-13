@@ -30,21 +30,27 @@ func main() {
 		AllowCredentials: true,
 		MaxAge:           12 * 3600, // Cache duration for preflight requests
 	}))
-	r.GET("/register", register)
+
+	r.GET("/register",register)
 	r.GET("/getStatusGame", getStatusGame)
 	r.GET("/startGame", startGame)
-	r.GET("/skip", skip)
-	r.GET("/reverse", reverse)
+
+	r.GET("/skip", skip, checkIDMiddleware())
+	r.GET("/reverse", reverse, checkIDMiddleware())
 
 	r.Run()
 }
 
 func reverse(c *gin.Context) {
-	db.Exec("UPDATE game_tb SET playuser = -playuser")
-	skip(c)
+	db.Exec("UPDATE game_tb SET rote = -rote")
+	skipBai(c, 5)
 }
 
 func skip(c *gin.Context) {
+	skipBai(c, 7)
+}
+
+func skipBai(c *gin.Context, bb int ) {
 	var ids string
 	var next int
 	db.QueryRow("SELECT GROUP_CONCAT(id) as ids FROM user_tb where username != ''").Scan(&ids)
@@ -61,7 +67,7 @@ func skip(c *gin.Context) {
 			} else if rote == -1 && i == 0 {
 				next = numbers[len(numbers) -1]
 			} else {
-				next = numbers[i+1]
+				next = numbers[i+rote]
 			}
 			break;
 		}
@@ -71,13 +77,32 @@ func skip(c *gin.Context) {
 	var arr string
 	db.QueryRow("SELECT arr FROM user_tb where id = ?;", c.Query("id")).Scan(&arr)
 	bobaiuser := convertStringtoArray(arr)
-	arrNew := removeOne(bobaiuser, 7)
+	arrNew := removeOne(bobaiuser, bb)
 	db.Exec("UPDATE user_tb set arr = ? where id = ?", joinIntSlice(arrNew), c.Query("id"))
+}
+
+func checkIDMiddleware() gin.HandlerFunc {
+    return func(c *gin.Context) {
+		var playuser string
+		db.QueryRow("SELECT playuser FROM game_tb", c.Query("id")).Scan(&playuser)  
+		
+		fmt.Println("---", playuser, c.Query("id"))
+
+
+		if playuser != c.Query("id") {
+			fmt.Println("k dc danh")
+			c.JSON(http.StatusBadRequest, gin.H{"error": "id must be greater than 10"})
+            c.Abort()
+            return
+        }
+        c.Next()
+    }
 }
 
 func removeOne(arr []int, num int) []int {
 	for i, value := range arr {
 		if value == num {
+			fmt.Println("--", value, num, append(arr[:i], arr[i+1:]...))
 			return append(arr[:i], arr[i+1:]...)
 		}
 	}

@@ -142,15 +142,9 @@
 
     }
 
-    function drag(ev) {
-        const bai = ev.target.src.split('/').pop().split('.')[0];
-        console.log(bai)
-
-        
-
-        if (bai == 7) {
-            $.ajax({
-                url: 'http://172.25.219.197:8080/skip?id=' + localStorage.getItem("iduser"),
+    function callajax(url) {
+        $.ajax({
+                url: url,
                 type: 'GET',
                 success: function (data) {
                 },
@@ -158,6 +152,18 @@
 
                 }
             });
+    }
+
+    function drag(ev) {
+        const bai = ev.target.src.split('/').pop().split('.')[0];
+        console.log(bai)
+
+
+
+        if (bai == 7) {
+            callajax('http://172.25.219.197:8080/skip?id=' + localStorage.getItem("iduser"))
+        } else if (bai == 5) {
+            callajax('http://172.25.219.197:8080/reverse?id=' + localStorage.getItem("iduser"))
         }
 
 
