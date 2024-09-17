@@ -40,7 +40,7 @@ func main() {
 
 	r.GET("/skip", skip)
 	r.GET("/reverse", reverse)
-	r.GET("/rutbai", reverse)
+	r.GET("/rutbai", rutbai)
 
 	r.Run()
 }
@@ -50,13 +50,22 @@ func rutbai(c *gin.Context) {
 		return
 	}
 
+	var bobai string
+	db.QueryRow("SELECT bobai FROM game_tb;").Scan(&bobai)
+	bobaigame := convertStringtoArray(bobai)
+	bairut := bobaigame[0]
+	fmt.Println(bobai)
+	fmt.Println(bobaigame)
+	fmt.Println(bairut)
+	bobaigame = bobaigame[1:]
+	fmt.Println(bobaigame)
+
+	db.Exec("UPDATE game_tb set bobai = ?", joinIntSlice(bobaigame))
 	var arr string
-	db.QueryRow("SELECT arr FROM game_tb;").Scan(&arr)
-	bobaiuser := convertStringtoArray(arr)
-	// todo
-	db.Exec("UPDATE user_tb set arr = ? where id = ?", joinIntSlice(bobaiuser), c.Query("id"))
-
-
+	db.QueryRow("SELECT arr FROM user_tb where id = ?;", c.Query("id")).Scan(&arr)
+	arrNew := arr + "," + strconv.Itoa(bairut)
+	db.Exec("UPDATE user_tb set arr = ? where id = ?", arrNew, c.Query("id"))
+	updateSkip(c)
 }
 func reverse(c *gin.Context) {
 	if !checkID(c.Query("id")) {
@@ -84,6 +93,18 @@ func skip(c *gin.Context) {
 }
 
 func skipBai(c *gin.Context, bb int) {
+	updateSkip(c)
+	var arr string
+	db.QueryRow("SELECT arr FROM user_tb where id = ?;", c.Query("id")).Scan(&arr)
+	fmt.Print(arr)
+	bobaiuser := convertStringtoArray(arr)
+	fmt.Print(bobaiuser)
+	arrNew := removeOne(bobaiuser, bb)
+	fmt.Print(arrNew)
+	db.Exec("UPDATE user_tb set arr = ? where id = ?", joinIntSlice(arrNew), c.Query("id"))
+}
+
+func updateSkip(c *gin.Context) {
 	var ids string
 	var next int
 	db.QueryRow("SELECT GROUP_CONCAT(id) as ids FROM user_tb where username != ''").Scan(&ids)
@@ -106,15 +127,6 @@ func skipBai(c *gin.Context, bb int) {
 		}
 	}
 	db.Exec("UPDATE game_tb SET playuser = ?", next)
-
-	var arr string
-	db.QueryRow("SELECT arr FROM user_tb where id = ?;", c.Query("id")).Scan(&arr)
-	fmt.Print(arr)
-	bobaiuser := convertStringtoArray(arr)
-	fmt.Print(bobaiuser)
-	arrNew := removeOne(bobaiuser, bb)
-	fmt.Print(arrNew)
-	db.Exec("UPDATE user_tb set arr = ? where id = ?", joinIntSlice(arrNew), c.Query("id"))
 }
 
 func checkID(id string) bool {

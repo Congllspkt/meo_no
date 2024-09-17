@@ -90,6 +90,7 @@
             <img draggable="true" ondragstart="drag(event)" id="div1" ondragover="allowDrop(event)"
                 src="https://via.placeholder.com/400" alt="Placeholder Image">
         </div>
+        <div><button id="btnRutBai">RutBai</button></div>
     </div>
 
     <div id="info_user"></div>
@@ -141,6 +142,10 @@
 
     $('#btnSort').click(function () {
         callajax('http://172.25.219.197:8080/sortBai?id=' + localStorage.getItem("iduser"))
+    })
+
+    $('#btnRutBai').click(function () {
+        callajax('http://172.25.219.197:8080/rutbai?id=' + localStorage.getItem("iduser"))
     })
 
     function allowDrop(ev) {
