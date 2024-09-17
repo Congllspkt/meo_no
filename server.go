@@ -65,6 +65,8 @@ func rutbai(c *gin.Context) {
 	db.QueryRow("SELECT arr FROM user_tb where id = ?;", c.Query("id")).Scan(&arr)
 	arrNew := arr + "," + strconv.Itoa(bairut)
 	db.Exec("UPDATE user_tb set arr = ? where id = ?", arrNew, c.Query("id"))
+
+	// if rut trung mao no {}
 	updateSkip(c)
 }
 func reverse(c *gin.Context) {
