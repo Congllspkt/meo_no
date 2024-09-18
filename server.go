@@ -79,17 +79,10 @@ func xaobai(c *gin.Context) {
 	var bobai string
 	db.QueryRow("SELECT bobai FROM game_tb;").Scan(&bobai)
 	bobaigameee := convertStringtoArray(bobai)
-	bobainewwwss := shuffle(bobaigameee)
-
+	shuffleSlice(bobaigameee)
+	db.Exec("UPDATE game_tb set bobai = ?", joinIntSlice(bobaigameee))
 }
 
-func shuffle(arr []int) {
-    r := rand.New(rand.NewSource(time.Now().UnixNano()))
-    for i := len(arr) - 1; i > 0; i-- {
-        j := r.Intn(i + 1) // Get a random index from 0 to i
-        arr[i], arr[j] = arr[j], arr[i] // Swap elements
-    }
-}
 
 func datmeono(c *gin.Context) {
 	if !checkID(c.Query("id")) {
