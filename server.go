@@ -41,8 +41,13 @@ func main() {
 	r.GET("/reverse", reverse)
 	r.GET("/rutbai", rutbai)
 	r.GET("/see3", see3)
+	r.GET("/datmeono", datmeono)
 
 	r.Run()
+}
+
+func datmeono(c *gin.Context) {
+
 }
 
 func see3(c *gin.Context) {
@@ -115,10 +120,12 @@ func rutbai(c *gin.Context) {
 				break
 			}
 		}
-
 		if exists {
 			bobaiusernew := removeOne(bobaiuser, 2)
 			db.Exec("UPDATE user_tb set arr = ? where id = ?", joinIntSlice(bobaiusernew), c.Query("id"))
+			c.JSON(http.StatusOK, gin.H{
+				"datmeono": "datmeono",
+			})
 		} else {
 			db.Exec("UPDATE user_tb set status = 'd' where id = ?", c.Query("id"))
 		}
@@ -325,8 +332,8 @@ func register(c *gin.Context) {
 }
 
 func getStatusGame(c *gin.Context) {
-	var status, arr, statusUser, messageStatusUser, playuser string
-	db.QueryRow("SELECT status, playuser FROM game_tb;").Scan(&status, &playuser)
+	var status, arr, statusUser, messageStatusUser, playuser, rote string
+	db.QueryRow("SELECT status, playuser, rote FROM game_tb;").Scan(&status, &playuser, &rote)
 
 	var messageStatus string
 	var statusGame string
@@ -371,5 +378,6 @@ func getStatusGame(c *gin.Context) {
 		"messageStatusUser": messageStatusUser,
 		"allUser":           users,
 		"playUser":          playuser,
+		"rote":          rote,
 	})
 }

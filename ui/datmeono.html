@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AJAX Button Example</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 50px;
+        }
+        button {
+            margin: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <button id="button1">frist</button>
+    <button id="button2">second</button>
+    <button id="buttonn">botton</button>
+    <button id="buttonr">random</button>
+
+    <div id="result"></div>
+
+    <script>
+        $(document).ready(function() {
+            $('#button1').click(function() {
+                callAjax('1');
+            });
+
+            $('#button2').click(function() {
+                callAjax('2');
+            });
+
+            $('#buttonn').click(function() {
+                callAjax('n');
+            });
+
+            $('#buttonr').click(function() {
+                callAjax('r');
+            });
+
+            function callAjax(message) {
+                $.ajax({
+                    url: 'http://172.25.219.197:8080/datmeono?id=' + localStorage.getItem("iduser") + "&ty=" + message,
+                    method: 'GET',
+                    success: function(response) {
+                        window.close();
+                    },
+                });
+            }
+        });
+    </script>
+</body>
+</html>

@@ -87,8 +87,8 @@
         </table>
         <div>
             <p id="header_game"></p>
-            <img id="div1" ondrop="drop(event)" ondragover="allowDrop(event)"
-                src="https://via.placeholder.com/400" alt="Placeholder Image">
+            <img id="div1" ondrop="drop(event)" ondragover="allowDrop(event)" src="https://via.placeholder.com/400"
+                alt="Placeholder Image">
             <br>
             <button id="btnRutBai">RutBai</button>
         </div>
@@ -96,7 +96,7 @@
 
     <div id="info_user"></div>
 
-    <div id="toiluot" style="color: red;"></div>
+    <div id="toiluot" style="color: blue;"></div>
     <div><button id="btnSort">sort</button></div>
     <table>
         <tr>
@@ -146,7 +146,19 @@
     })
 
     $('#btnRutBai').click(function () {
-        callajax('http://172.25.219.197:8080/rutbai?id=' + localStorage.getItem("iduser"))
+        $.ajax({
+            url: 'http://172.25.219.197:8080/rutbai?id=' + localStorage.getItem("iduser"),
+            type: 'GET',
+            success: function (data) {
+                if (data && data.datmeono) {
+                    window.open('datmeono.html', '_blank', 'width=800,height=600');
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+
+            }
+        });
+
     })
 
     function callajax(url) {
@@ -218,18 +230,31 @@
                 }
                 $('#userTable tbody').empty()
 
+                var rote = (data.rote == "1") ? "⬆" : "⬇";
+
 
                 $.each(data.allUser, function (index, user) {
                     if (user.id == data.playUser + "") {
                         $('#userTable tbody').append(
                             $('<tr>').append(
+                                $('<td>').text(rote),
                                 $('<td>').text(user.username),
-                                $('<td>').text("dang danh").css('color', 'red')
+                                $('<td>').text("dang danh").css('color', 'blue')
+                            )
+                        );
+                    } else if (user.status == 'd') {
+                        console.log("xxxxxxxxx")
+                        $('#userTable tbody').append(
+                            $('<tr>').append(
+                                $('<td>').text(rote),
+                                $('<td>').text(user.username),
+                                $('<td>').text("thua roi").css('color', 'red')
                             )
                         );
                     } else {
                         $('#userTable tbody').append(
                             $('<tr>').append(
+                                $('<td>').text(rote),
                                 $('<td>').text(user.username),
                                 $('<td>').text("")
                             )
