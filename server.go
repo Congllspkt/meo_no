@@ -37,7 +37,6 @@ func main() {
 	r.GET("/startGame", startGame)
 	r.GET("/sortBai", sortBai)
 
-
 	r.GET("/skip", skip)
 	r.GET("/reverse", reverse)
 	r.GET("/rutbai", rutbai)
@@ -58,17 +57,17 @@ func see3(c *gin.Context) {
 	bobaiuser := convertStringtoArray(arr)
 	exists := false
 
-    for _, num := range bobaiuser {
-        if num == 3 {
-            exists = true
-            break
-        }
-    }
+	for _, num := range bobaiuser {
+		if num == 3 {
+			exists = true
+			break
+		}
+	}
 
-    if !exists {
-        c.Abort()
+	if !exists {
+		c.Abort()
 		return
-    }
+	}
 
 	// rut see3
 	bobaiusernew := removeOne(bobaiuser, 3)
@@ -102,12 +101,35 @@ func rutbai(c *gin.Context) {
 	fmt.Println(bobaigame)
 
 	db.Exec("UPDATE game_tb set bobai = ?", joinIntSlice(bobaigame))
+
+	//trung meo no
+	if bairut == 1 {
+		var arr string
+		db.QueryRow("SELECT arr FROM user_tb where id = ?;", c.Query("id")).Scan(&arr)
+		bobaiuser := convertStringtoArray(arr)
+		exists := false
+
+		for _, num := range bobaiuser {
+			if num == 2 {
+				exists = true
+				break
+			}
+		}
+
+		if exists {
+			bobaiusernew := removeOne(bobaiuser, 2)
+			db.Exec("UPDATE user_tb set arr = ? where id = ?", joinIntSlice(bobaiusernew), c.Query("id"))
+		} else {
+			db.Exec("UPDATE user_tb set status = 'd' where id = ?", c.Query("id"))
+		}
+		return
+	}
+
 	var arr string
 	db.QueryRow("SELECT arr FROM user_tb where id = ?;", c.Query("id")).Scan(&arr)
 	arrNew := arr + "," + strconv.Itoa(bairut)
 	db.Exec("UPDATE user_tb set arr = ? where id = ?", arrNew, c.Query("id"))
 
-	// if rut trung mao no {}
 	updateSkip(c)
 }
 func reverse(c *gin.Context) {
@@ -128,7 +150,7 @@ func sortBai(c *gin.Context) {
 }
 
 func skip(c *gin.Context) {
-		if !checkID(c.Query("id")) {
+	if !checkID(c.Query("id")) {
 		c.Abort()
 		return
 	}
@@ -150,7 +172,7 @@ func skipBai(c *gin.Context, bb int) {
 func updateSkip(c *gin.Context) {
 	var ids string
 	var next int
-	db.QueryRow("SELECT GROUP_CONCAT(id) as ids FROM user_tb where username != ''").Scan(&ids)
+	db.QueryRow("SELECT GROUP_CONCAT(id) as ids FROM user_tb where username != '' and status = 'p'").Scan(&ids)
 
 	var rote int
 	db.QueryRow("SELECT rote FROM game_tb").Scan(&rote)
