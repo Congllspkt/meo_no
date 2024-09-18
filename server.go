@@ -197,6 +197,7 @@ func rutbai(c *gin.Context) {
 				"datmeono": "datmeono",
 			})
 		} else {
+			updateSkip(c)
 			db.Exec("UPDATE user_tb set status = 'd' where id = ?", c.Query("id"))
 		}
 		return
@@ -206,8 +207,8 @@ func rutbai(c *gin.Context) {
 	db.QueryRow("SELECT arr FROM user_tb where id = ?;", c.Query("id")).Scan(&arr)
 	arrNew := arr + "," + strconv.Itoa(bairut)
 	db.Exec("UPDATE user_tb set arr = ? where id = ?", arrNew, c.Query("id"))
-
 	updateSkip(c)
+
 }
 func reverse(c *gin.Context) {
 	if !checkID(c.Query("id")) {
@@ -256,8 +257,11 @@ func updateSkip(c *gin.Context) {
 	var numbers = convertStringtoArray(ids)
 
 	for i, value := range numbers {
-		if strconv.Itoa(value) == c.Query("id") {
+		fmt.Println("id: ", strconv.Itoa(value), c.Query("id"))
 
+		if strconv.Itoa(value) == c.Query("id") {
+			fmt.Println("```````````````")
+			fmt.Println(strconv.Itoa(value), rote)
 			if rote == 1 && i == len(numbers)-1 {
 				next = numbers[0]
 			} else if rote == -1 && i == 0 {
@@ -265,6 +269,7 @@ func updateSkip(c *gin.Context) {
 			} else {
 				next = numbers[i+rote]
 			}
+			fmt.Println(next)
 			break
 		}
 	}
@@ -312,7 +317,7 @@ func startGame(c *gin.Context) {
 	meobom1 := numberPlayers - 1
 
 	meosee3 := 6
-	meogive4 := 6
+	meogive4 := 0
 	meoreverse5 := 6
 	meosuffle6 := 6
 	meoskip7 := 6
@@ -354,7 +359,6 @@ func startGame(c *gin.Context) {
 	shuffleSlice(arrBobai)
 	shuffleSlice(arrBobai)
 	shuffleSlice(arrBobai)
-
 	db.Exec("UPDATE game_tb SET bobai = ?, playuser = ?", joinIntSlice(arrBobai), getRandomElement(numbers))
 
 }

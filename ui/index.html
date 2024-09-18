@@ -187,6 +187,8 @@
             callajax('http://172.25.219.197:8080/skip?id=' + localStorage.getItem("iduser"))
         } else if (bai == 5) {
             callajax('http://172.25.219.197:8080/reverse?id=' + localStorage.getItem("iduser"))
+        }else if (bai == 6) {
+            callajax('http://172.25.219.197:8080/xaobai?id=' + localStorage.getItem("iduser"))
         } else if (bai == 3) {
             $.ajax({
                 url: 'http://172.25.219.197:8080/see3?id=' + localStorage.getItem("iduser"),
@@ -230,7 +232,7 @@
                 }
                 $('#userTable tbody').empty()
 
-                var rote = (data.rote == "1") ? "⬆" : "⬇";
+                var rote = (data.rote == "1") ? "⬇" : "⬆";
 
 
                 $.each(data.allUser, function (index, user) {
