@@ -42,8 +42,53 @@ func main() {
 	r.GET("/rutbai", rutbai)
 	r.GET("/see3", see3)
 	r.GET("/datmeono", datmeono)
+	r.GET("/xaobai", xaobai)
 
 	r.Run()
+}
+
+func xaobai(c *gin.Context) {
+	if !checkID(c.Query("id")) {
+		c.Abort()
+		return
+	}
+
+	// check user have xaobai
+	var arr string
+	db.QueryRow("SELECT arr FROM user_tb where id = ?;", c.Query("id")).Scan(&arr)
+	bobaiuser := convertStringtoArray(arr)
+	exists := false
+
+	for _, num := range bobaiuser {
+		if num == 6 {
+			exists = true
+			break
+		}
+	}
+
+	if !exists {
+		c.Abort()
+		return
+	}
+
+	// rut saobai
+	bobaiusernew := removeOne(bobaiuser, 6)
+	db.Exec("UPDATE user_tb set arr = ? where id = ?", joinIntSlice(bobaiusernew), c.Query("id"))
+
+	// xaobai
+	var bobai string
+	db.QueryRow("SELECT bobai FROM game_tb;").Scan(&bobai)
+	bobaigameee := convertStringtoArray(bobai)
+	bobainewwwss := shuffle(bobaigameee)
+
+}
+
+func shuffle(arr []int) {
+    r := rand.New(rand.NewSource(time.Now().UnixNano()))
+    for i := len(arr) - 1; i > 0; i-- {
+        j := r.Intn(i + 1) // Get a random index from 0 to i
+        arr[i], arr[j] = arr[j], arr[i] // Swap elements
+    }
 }
 
 func datmeono(c *gin.Context) {
@@ -64,12 +109,13 @@ func datmeono(c *gin.Context) {
 	} else if (typeG == "2") {
 		idg = 1
 	} else if (typeG == "n") {
-		idg = len(bobaigame) -1
+		idg = len(bobaigame)
 	} else {
-		idg = rand.Intn(len(bobaigame) -1)
+		idg = rand.Intn(len(bobaigame))
 	}
 	bobainew := insertAtPosition(bobaigame, 1, idg)
 	db.Exec("UPDATE game_tb set bobai = ?", joinIntSlice(bobainew))
+	updateSkip(c)
 }
 
 func insertAtPosition(arr []int, num int, position int) []int {
