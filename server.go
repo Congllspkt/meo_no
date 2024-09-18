@@ -47,7 +47,6 @@ func main() {
 }
 
 func see3(c *gin.Context) {
-
 	if !checkID(c.Query("id")) {
 		c.Abort()
 		return
@@ -74,7 +73,6 @@ func see3(c *gin.Context) {
 	// rut see3
 	bobaiusernew := removeOne(bobaiuser, 3)
 	db.Exec("UPDATE user_tb set arr = ? where id = ?", joinIntSlice(bobaiusernew), c.Query("id"))
-
 
 	// xem see3
 	var bobai string
@@ -177,11 +175,7 @@ func updateSkip(c *gin.Context) {
 func checkID(id string) bool {
 	var playuser string
 	db.QueryRow("SELECT playuser FROM game_tb").Scan(&playuser)
-
-	if playuser != id {
-		return false
-	}
-	return true
+	return playuser == id
 }
 
 func removeOne(arr []int, num int) []int {
