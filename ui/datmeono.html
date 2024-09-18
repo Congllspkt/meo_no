@@ -47,7 +47,7 @@
 
             function callAjax(message) {
                 $.ajax({
-                    url: 'http://172.25.219.197:8080/datmeono?id=' + localStorage.getItem("iduser") + "&ty=" + message,
+                    url: 'http://172.25.219.197:8080/datmeono?id=' + localStorage.getItem("iduser") + "&type=" + message,
                     method: 'GET',
                     success: function(response) {
                         window.close();

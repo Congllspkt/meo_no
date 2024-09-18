@@ -47,7 +47,38 @@ func main() {
 }
 
 func datmeono(c *gin.Context) {
+	if !checkID(c.Query("id")) {
+		c.Abort()
+		return
+	}
 
+	var bobai string
+	db.QueryRow("SELECT bobai FROM game_tb;").Scan(&bobai)
+	bobaigame := convertStringtoArray(bobai)
+	rand.Seed(time.Now().UnixNano())
+
+	typeG := c.Query("type")
+	var idg int
+	if typeG == "1" {
+		idg = 0
+	} else if (typeG == "2") {
+		idg = 1
+	} else if (typeG == "n") {
+		idg = len(bobaigame) -1
+	} else {
+		idg = rand.Intn(len(bobaigame) -1)
+	}
+	bobainew := insertAtPosition(bobaigame, 1, idg)
+	db.Exec("UPDATE game_tb set bobai = ?", joinIntSlice(bobainew))
+}
+
+func insertAtPosition(arr []int, num int, position int) []int {
+    if position < 0 || position > len(arr) {
+        fmt.Println("Invalid position")
+        return arr
+    }
+        arr = append(arr[:position], append([]int{num}, arr[position:]...)...)
+    return arr
 }
 
 func see3(c *gin.Context) {
