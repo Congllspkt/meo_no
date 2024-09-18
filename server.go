@@ -41,9 +41,52 @@ func main() {
 	r.GET("/skip", skip)
 	r.GET("/reverse", reverse)
 	r.GET("/rutbai", rutbai)
+	r.GET("/see3", see3)
 
 	r.Run()
 }
+
+func see3(c *gin.Context) {
+
+	if !checkID(c.Query("id")) {
+		c.Abort()
+		return
+	}
+
+	// check user have see3
+	var arr string
+	db.QueryRow("SELECT arr FROM user_tb where id = ?;", c.Query("id")).Scan(&arr)
+	bobaiuser := convertStringtoArray(arr)
+	exists := false
+
+    for _, num := range bobaiuser {
+        if num == 3 {
+            exists = true
+            break
+        }
+    }
+
+    if !exists {
+        c.Abort()
+		return
+    }
+
+	// rut see3
+	bobaiusernew := removeOne(bobaiuser, 3)
+	db.Exec("UPDATE user_tb set arr = ? where id = ?", joinIntSlice(bobaiusernew), c.Query("id"))
+
+
+	// xem see3
+	var bobai string
+	db.QueryRow("SELECT bobai FROM game_tb;").Scan(&bobai)
+	bobaigame := convertStringtoArray(bobai)
+	see3 := bobaigame[:3]
+
+	c.JSON(http.StatusOK, gin.H{
+		"see3": see3,
+	})
+}
+
 func rutbai(c *gin.Context) {
 	if !checkID(c.Query("id")) {
 		c.Abort()

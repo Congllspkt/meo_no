@@ -87,8 +87,9 @@
         </table>
         <div>
             <p id="header_game"></p>
-            <img draggable="true" ondragstart="drag(event)" id="div1" ondragover="allowDrop(event)"
+            <img id="div1" ondrop="drop(event)" ondragover="allowDrop(event)"
                 src="https://via.placeholder.com/400" alt="Placeholder Image">
+            <br>
             <button id="btnRutBai">RutBai</button>
         </div>
     </div>
@@ -148,10 +149,6 @@
         callajax('http://172.25.219.197:8080/rutbai?id=' + localStorage.getItem("iduser"))
     })
 
-    function allowDrop(ev) {
-
-    }
-
     function callajax(url) {
         $.ajax({
             url: url,
@@ -164,17 +161,41 @@
         });
     }
 
-    function drag(ev) {
-        const bai = ev.target.src.split('/').pop().split('.')[0];
+    function allowDrop(ev) {
+        ev.preventDefault();
+
+    }
+
+    function drop(ev) {
+        ev.preventDefault();
+        const bai = localStorage.getItem("rutBai")
         console.log(bai)
-
-
 
         if (bai == 7) {
             callajax('http://172.25.219.197:8080/skip?id=' + localStorage.getItem("iduser"))
         } else if (bai == 5) {
             callajax('http://172.25.219.197:8080/reverse?id=' + localStorage.getItem("iduser"))
+        } else if (bai == 3) {
+            $.ajax({
+                url: 'http://172.25.219.197:8080/see3?id=' + localStorage.getItem("iduser"),
+                type: 'GET',
+                success: function (data) {
+                    if (data && data.see3) {
+                        localStorage.setItem("see3", data.see3);
+                        window.open('see3.html', '_blank', 'width=800,height=600');
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+
+                }
+            });
         }
+    }
+
+
+
+    function drag(ev) {
+        localStorage.setItem("rutBai", ev.target.src.split('/').pop().split('.')[0])
     }
 
     var name = localStorage.getItem("username")
@@ -233,10 +254,6 @@
                     for (var i = 1; i <= lenArr; i++) {
                         $('#b' + i).attr('src', "img/" + numArray[i - 1] + ".jpg");
                     }
-
-
-
-
                 }
             },
             error: function (jqXHR, textStatus, errorThrown) {

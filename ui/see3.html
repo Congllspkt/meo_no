@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Manager</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        #response {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        img {
+            max-width: 100px;
+            /* Adjust size as needed */
+            margin: 5px;
+        }
+
+        button {
+            padding: 10px 15px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+
+<body>
+
+    <div id="response"></div>
+
+    <script>
+        var arrSee3 = localStorage.getItem("see3").split(",");
+
+        $('#response').empty();
+        if (Array.isArray(arrSee3)) {
+            arrSee3.forEach(function (ii) {
+                console.log(ii)
+                var img = $('<img>').attr('src', "img/" + ii + ".jpg").on('error', function () {
+                    $(this).attr('alt', 'Image not found');
+                });
+                $('#response').append(img);
+            });
+        } else {
+            $('#response').text('No images found or invalid data.');
+        }
+    </script>
+
+</body>
+
+</html>
