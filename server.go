@@ -104,6 +104,7 @@ func datmeono(c *gin.Context) {
 	db.Exec("insert into log_tb (mm) values (?)", username+": bi mat 1 la defuse")
 	db.Exec("insert into log_tb (mm) values (?)", username+": da nhet 1 la meo no vao bo bai")
 	db.Exec("UPDATE game_tb set bai = ?", 1)
+	db.Exec("UPDATE user_tb set bom = '1' where id = ?", c.Query("id"))
 
 	var bobai string
 	db.QueryRow("SELECT bobai FROM game_tb;").Scan(&bobai)
@@ -344,7 +345,7 @@ func startGame(c *gin.Context) {
 
 	// get all id nguoi choi
 	db.Exec("UPDATE user_tb set status = ''")
-	db.Exec("UPDATE user_tb set status = 'p' where username != ''")
+	db.Exec("UPDATE user_tb set status = 'p', bom = '0' where username != ''")
 
 	var ids string
 	db.QueryRow("SELECT GROUP_CONCAT(id) as ids FROM user_tb where username != ''").Scan(&ids)
@@ -440,7 +441,7 @@ func register(c *gin.Context) {
 }
 
 func getStatusGame(c *gin.Context) {
-	var status, arr, statusUser, messageStatusUser, playuser, rote, bobai, bai string
+	var status, arr, statusUser, messageStatusUser, playuser, rote, bobai, bai, bom string
 	db.QueryRow("SELECT status, playuser, rote, bobai, bai FROM game_tb;").Scan(&status, &playuser, &rote, &bobai, &bai)
 
 	var messageStatus string
@@ -465,18 +466,18 @@ func getStatusGame(c *gin.Context) {
 		}
 	}
 
-	rows, _ := db.Query("SELECT id, username, status  FROM user_tb where username != '';")
+	rows, _ := db.Query("SELECT id, username, status, bom  FROM user_tb where username != '';")
 	var users []map[string]interface{}
 	for rows.Next() {
 		var id, username, status string
-		rows.Scan(&id, &username, &status)
+		rows.Scan(&id, &username, &status, &bom)
 		user := map[string]interface{}{
 			"id":       id,
 			"username": username,
 			"status":   status,
+			"bom":   bom,
 		}
 		users = append(users, user)
-
 	}
 
 	rowms, _ := db.Query("SELECT mm FROM log_tb ORDER BY id desc LIMIT 30;")

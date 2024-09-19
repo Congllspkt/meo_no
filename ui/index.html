@@ -208,8 +208,6 @@
         }
     }
 
-
-
     function drag(ev) {
         localStorage.setItem("rutBai", ev.target.src.split('/').pop().split('.')[0])
     }
@@ -244,11 +242,12 @@
 
 
                 $.each(data.allUser, function (index, user) {
+                    var bom = user.bom == "1"? "💣" : "";
                     if (user.id == data.playUser + "") {
                         $('#userTable tbody').append(
                             $('<tr>').append(
                                 $('<td>').text(rote),
-                                $('<td>').text(user.username),
+                                $('<td>').text(user.username + bom),
                                 $('<td>').text("dang danh").css('color', 'blue')
                             )
                         );
@@ -257,7 +256,7 @@
                         $('#userTable tbody').append(
                             $('<tr>').append(
                                 $('<td>').text(rote),
-                                $('<td>').text(user.username),
+                                $('<td>').text(user.username + bom),
                                 $('<td>').text("thua roi").css('color', 'red')
                             )
                         );
@@ -265,7 +264,7 @@
                         $('#userTable tbody').append(
                             $('<tr>').append(
                                 $('<td>').text(rote),
-                                $('<td>').text(user.username),
+                                $('<td>').text(user.username + bom),
                                 $('<td>').text("")
                             )
                         );
