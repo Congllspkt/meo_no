@@ -87,7 +87,6 @@ func xaobai(c *gin.Context) {
 	db.Exec("UPDATE game_tb set bobai = ?", joinIntSlice(bobaigameee))
 }
 
-
 func datmeono(c *gin.Context) {
 	if !checkID(c.Query("id")) {
 		c.Abort()
@@ -103,9 +102,9 @@ func datmeono(c *gin.Context) {
 	var idg int
 	if typeG == "1" {
 		idg = 0
-	} else if (typeG == "2") {
+	} else if typeG == "2" {
 		idg = 1
-	} else if (typeG == "n") {
+	} else if typeG == "n" {
 		idg = len(bobaigame)
 	} else {
 		idg = rand.Intn(len(bobaigame))
@@ -116,12 +115,12 @@ func datmeono(c *gin.Context) {
 }
 
 func insertAtPosition(arr []int, num int, position int) []int {
-    if position < 0 || position > len(arr) {
-        fmt.Println("Invalid position")
-        return arr
-    }
-        arr = append(arr[:position], append([]int{num}, arr[position:]...)...)
-    return arr
+	if position < 0 || position > len(arr) {
+		fmt.Println("Invalid position")
+		return arr
+	}
+	arr = append(arr[:position], append([]int{num}, arr[position:]...)...)
+	return arr
 }
 
 func see3(c *gin.Context) {
@@ -177,11 +176,7 @@ func rutbai(c *gin.Context) {
 	db.QueryRow("SELECT bobai FROM game_tb;").Scan(&bobai)
 	bobaigame := convertStringtoArray(bobai)
 	bairut := bobaigame[0]
-	fmt.Println(bobai)
-	fmt.Println(bobaigame)
-	fmt.Println(bairut)
 	bobaigame = bobaigame[1:]
-	fmt.Println(bobaigame)
 
 	db.Exec("UPDATE game_tb set bobai = ?", joinIntSlice(bobaigame))
 
@@ -265,11 +260,8 @@ func updateSkip(c *gin.Context) {
 	var numbers = convertStringtoArray(ids)
 
 	for i, value := range numbers {
-		fmt.Println("id: ", strconv.Itoa(value), c.Query("id"))
 
 		if strconv.Itoa(value) == c.Query("id") {
-			fmt.Println("```````````````")
-			fmt.Println(strconv.Itoa(value), rote)
 			if rote == 1 && i == len(numbers)-1 {
 				next = numbers[0]
 			} else if rote == -1 && i == 0 {
@@ -277,7 +269,6 @@ func updateSkip(c *gin.Context) {
 			} else {
 				next = numbers[i+rote]
 			}
-			fmt.Println(next)
 			break
 		}
 	}
@@ -314,13 +305,9 @@ func startGame(c *gin.Context) {
 	db.Exec("UPDATE user_tb set status = ''")
 	db.Exec("UPDATE user_tb set status = 'p' where username != ''")
 
-	
-
 	var ids string
 	db.QueryRow("SELECT GROUP_CONCAT(id) as ids FROM user_tb where username != ''").Scan(&ids)
 	var numbers = convertStringtoArray(ids)
-	fmt.Println("ids: ", numbers)
-
 	numberPlayers := len(numbers)
 
 	// meodefause2 := 1
@@ -338,32 +325,22 @@ func startGame(c *gin.Context) {
 	arrBobai = appendBobai(arrBobai, meoreverse5, 5)
 	arrBobai = appendBobai(arrBobai, meosuffle6, 6)
 	arrBobai = appendBobai(arrBobai, meoskip7, 7)
-	fmt.Println("Tao Bo Bai : ", arrBobai)
 
 	// trom bai
 	shuffleSlice(arrBobai)
 	shuffleSlice(arrBobai)
 	shuffleSlice(arrBobai)
-	fmt.Println("Hoan Vi Bo Bai : ", arrBobai)
 
 	// chi bai
 	for i := 0; i < numberPlayers; i++ {
 		baiUser := arrBobai[:4]
 		arrBobai = arrBobai[4:]
-
-		fmt.Println("Bo Bai : ", i, arrBobai)
-
 		var bai = []int{2}
 		bai = append(bai, baiUser...)
-		fmt.Println("bai user", i, bai)
-
 		// save arr
 		joinbai := joinIntSlice(bai)
 		db.Exec("UPDATE user_tb SET arr = ? where id = ?", joinbai, numbers[i])
 	}
-
-	fmt.Println("Bo Bai : ", arrBobai)
-
 	arrBobai = append(arrBobai, 2)
 	arrBobai = appendBobai(arrBobai, meobom1, 1)
 	shuffleSlice(arrBobai)
@@ -416,11 +393,12 @@ func register(c *gin.Context) {
 }
 
 func getStatusGame(c *gin.Context) {
-	var status, arr, statusUser, messageStatusUser, playuser, rote string
-	db.QueryRow("SELECT status, playuser, rote FROM game_tb;").Scan(&status, &playuser, &rote)
+	var status, arr, statusUser, messageStatusUser, playuser, rote, bobai, bai string
+	db.QueryRow("SELECT status, playuser, rote, bobai, bai FROM game_tb;").Scan(&status, &playuser, &rote, &bobai, &bai)
 
 	var messageStatus string
 	var statusGame string
+	var bobaiarr = convertStringtoArray(bobai)
 
 	if status == "w" {
 		messageStatus = "Cho game 1 xiu"
@@ -462,6 +440,8 @@ func getStatusGame(c *gin.Context) {
 		"messageStatusUser": messageStatusUser,
 		"allUser":           users,
 		"playUser":          playuser,
-		"rote":          rote,
+		"rote":              rote,
+		"sobaiconlai":       len(bobaiarr),
+		"bai":       bai,
 	})
 }
