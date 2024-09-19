@@ -43,8 +43,12 @@ func main() {
 	r.GET("/see3", see3)
 	r.GET("/datmeono", datmeono)
 	r.GET("/xaobai", xaobai)
+	r.GET("/stealbai", stealbai)
 
 	r.Run()
+}
+func stealbai(c *gin.Context) {
+
 }
 
 func xaobai(c *gin.Context) {
@@ -153,6 +157,10 @@ func see3(c *gin.Context) {
 	db.QueryRow("SELECT bobai FROM game_tb;").Scan(&bobai)
 	bobaigame := convertStringtoArray(bobai)
 	see3 := bobaigame[:3]
+
+	see3 = removeOne(see3, 0)
+	see3 = removeOne(see3, 0)
+	see3 = removeOne(see3, 0)
 
 	c.JSON(http.StatusOK, gin.H{
 		"see3": see3,
@@ -306,6 +314,8 @@ func startGame(c *gin.Context) {
 	db.Exec("UPDATE user_tb set status = ''")
 	db.Exec("UPDATE user_tb set status = 'p' where username != ''")
 
+	
+
 	var ids string
 	db.QueryRow("SELECT GROUP_CONCAT(id) as ids FROM user_tb where username != ''").Scan(&ids)
 	var numbers = convertStringtoArray(ids)
@@ -359,7 +369,7 @@ func startGame(c *gin.Context) {
 	shuffleSlice(arrBobai)
 	shuffleSlice(arrBobai)
 	shuffleSlice(arrBobai)
-	db.Exec("UPDATE game_tb SET bobai = ?, playuser = ?", joinIntSlice(arrBobai), getRandomElement(numbers))
+	db.Exec("UPDATE game_tb SET bobai = ?, playuser = ?, rote = 1", joinIntSlice(arrBobai), getRandomElement(numbers))
 
 }
 
