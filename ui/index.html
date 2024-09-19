@@ -248,7 +248,8 @@
                             $('<tr>').append(
                                 $('<td>').text(rote),
                                 $('<td>').text(user.username + bom),
-                                $('<td>').text("dang danh").css('color', 'blue')
+                                $('<td>').text("dang danh").css('color', 'blue'),
+                                $('<td>').text(user.arr)
                             )
                         );
                     } else if (user.status == 'd') {
@@ -257,7 +258,8 @@
                             $('<tr>').append(
                                 $('<td>').text(rote),
                                 $('<td>').text(user.username + bom),
-                                $('<td>').text("thua roi").css('color', 'red')
+                                $('<td>').text("thua roi").css('color', 'red'),
+                                $('<td>').text(user.arr)
                             )
                         );
                     } else {
@@ -265,7 +267,8 @@
                             $('<tr>').append(
                                 $('<td>').text(rote),
                                 $('<td>').text(user.username + bom),
-                                $('<td>').text("")
+                                $('<td>').text(""),
+                                $('<td>').text(user.arr)
                             )
                         );
                     }

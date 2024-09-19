@@ -466,16 +466,17 @@ func getStatusGame(c *gin.Context) {
 		}
 	}
 
-	rows, _ := db.Query("SELECT id, username, status, bom  FROM user_tb where username != '';")
+	rows, _ := db.Query("SELECT id, username, status, bom, arr  FROM user_tb where username != '';")
 	var users []map[string]interface{}
 	for rows.Next() {
 		var id, username, status string
-		rows.Scan(&id, &username, &status, &bom)
+		rows.Scan(&id, &username, &status, &bom, &arr)
 		user := map[string]interface{}{
 			"id":       id,
 			"username": username,
 			"status":   status,
 			"bom":   bom,
+			"arr":   len(convertStringtoArray(arr)),
 		}
 		users = append(users, user)
 	}
