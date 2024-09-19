@@ -57,6 +57,11 @@ func xaobai(c *gin.Context) {
 		return
 	}
 
+	var username string
+	db.QueryRow("SELECT username FROM user_tb WHERE id = ?", c.Query("id")).Scan(&username)
+	db.Exec("insert into log_tb (mm) values (?)", username+": da xao bai")
+	db.Exec("UPDATE game_tb set bai = ?", 6)
+
 	// check user have xaobai
 	var arr string
 	db.QueryRow("SELECT arr FROM user_tb where id = ?;", c.Query("id")).Scan(&arr)
@@ -93,6 +98,13 @@ func datmeono(c *gin.Context) {
 		return
 	}
 
+	var username string
+	db.QueryRow("SELECT username FROM user_tb WHERE id = ?", c.Query("id")).Scan(&username)
+	db.Exec("insert into log_tb (mm) values (?)", username+": rut meo no")
+	db.Exec("insert into log_tb (mm) values (?)", username+": bi mat 1 la defuse")
+	db.Exec("insert into log_tb (mm) values (?)", username+": da nhet 1 la meo no vao bo bai")
+	db.Exec("UPDATE game_tb set bai = ?", 1)
+
 	var bobai string
 	db.QueryRow("SELECT bobai FROM game_tb;").Scan(&bobai)
 	bobaigame := convertStringtoArray(bobai)
@@ -128,6 +140,11 @@ func see3(c *gin.Context) {
 		c.Abort()
 		return
 	}
+
+	var username string
+	db.QueryRow("SELECT username FROM user_tb WHERE id = ?", c.Query("id")).Scan(&username)
+	db.Exec("insert into log_tb (mm) values (?)", username+": danh bai see a furture")
+	db.Exec("UPDATE game_tb set bai = ?", 3)
 
 	// check user have see3
 	var arr string
@@ -172,6 +189,10 @@ func rutbai(c *gin.Context) {
 		return
 	}
 
+	var username string
+	db.QueryRow("SELECT username FROM user_tb WHERE id = ?", c.Query("id")).Scan(&username)
+	db.Exec("insert into log_tb (mm) values (?)", username+": rut bai")
+
 	var bobai string
 	db.QueryRow("SELECT bobai FROM game_tb;").Scan(&bobai)
 	bobaigame := convertStringtoArray(bobai)
@@ -202,6 +223,10 @@ func rutbai(c *gin.Context) {
 		} else {
 			updateSkip(c)
 			db.Exec("UPDATE user_tb set status = 'd' where id = ?", c.Query("id"))
+			var username string
+			db.QueryRow("SELECT username FROM user_tb WHERE id = ?", c.Query("id")).Scan(&username)
+			db.Exec("insert into log_tb (mm) values (?)", username+": thua")
+			db.Exec("UPDATE game_tb set bai = ?", 1)
 		}
 		return
 	}
@@ -218,6 +243,12 @@ func reverse(c *gin.Context) {
 		c.Abort()
 		return
 	}
+
+	var username string
+	db.QueryRow("SELECT username FROM user_tb WHERE id = ?", c.Query("id")).Scan(&username)
+	db.Exec("insert into log_tb (mm) values (?)", username+": danh bai reverse")
+	db.Exec("UPDATE game_tb set bai = ?", 5)
+
 	db.Exec("UPDATE game_tb SET rote = -rote")
 	skipBai(c, 5)
 }
@@ -235,6 +266,12 @@ func skip(c *gin.Context) {
 		c.Abort()
 		return
 	}
+
+	var username string
+	db.QueryRow("SELECT username FROM user_tb WHERE id = ?", c.Query("id")).Scan(&username)
+	db.Exec("insert into log_tb (mm) values (?)", username+": danh bai skip")
+	db.Exec("UPDATE game_tb set bai = ?", 7)
+
 	skipBai(c, 7)
 }
 
@@ -301,6 +338,10 @@ func convertStringtoArray(ids string) []int {
 }
 
 func startGame(c *gin.Context) {
+
+	db.Exec("DELETE from log_tb")
+	db.Exec("insert into log_tb (mm) values ('bat dau game')")
+
 	// get all id nguoi choi
 	db.Exec("UPDATE user_tb set status = ''")
 	db.Exec("UPDATE user_tb set status = 'p' where username != ''")
@@ -346,7 +387,13 @@ func startGame(c *gin.Context) {
 	shuffleSlice(arrBobai)
 	shuffleSlice(arrBobai)
 	shuffleSlice(arrBobai)
-	db.Exec("UPDATE game_tb SET bobai = ?, playuser = ?, rote = 1", joinIntSlice(arrBobai), getRandomElement(numbers))
+
+	nguoididau := getRandomElement(numbers)
+	db.Exec("UPDATE game_tb SET bobai = ?, playuser = ?, rote = 1", joinIntSlice(arrBobai), nguoididau)
+
+	var username string
+	db.QueryRow("SELECT username FROM user_tb WHERE id = ?", nguoididau).Scan(&username)
+	db.Exec("insert into log_tb (mm) values (?)", username+" di dau tien")
 
 }
 
@@ -432,6 +479,15 @@ func getStatusGame(c *gin.Context) {
 
 	}
 
+	rowms, _ := db.Query("SELECT mm FROM log_tb ORDER BY id desc LIMIT 30;")
+	var logs []string
+	for rowms.Next() {
+		var mm string
+		rowms.Scan(&mm)
+		logs = append(logs, mm)
+
+	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"statusGame":        statusGame,
 		"messageStatus":     messageStatus,
@@ -442,6 +498,7 @@ func getStatusGame(c *gin.Context) {
 		"playUser":          playuser,
 		"rote":              rote,
 		"sobaiconlai":       len(bobaiarr),
-		"bai":       bai,
+		"bai":               bai,
+		"log":               logs,
 	})
 }

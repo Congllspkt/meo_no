@@ -91,7 +91,7 @@
             <img id="bai" style="height: 400px; width: 400px" ondrop="drop(event)" ondragover="allowDrop(event)" src="https://via.placeholder.com/400"
                 alt="Placeholder Image">
                 <strong></strong>
-                <textarea id="w3review" rows="26" cols="50" disabled></textarea>
+                <textarea id="textal" rows="26" cols="50" disabled></textarea>
             <br>
             <button id="btnRutBai">RutBai</button>
         </div>
@@ -227,6 +227,10 @@
             success: function (data) {
                 $("#sobaiconlai").text("**********so bai con lai" + data.sobaiconlai)
                 $('#bai').attr('src', "img/"+ data.bai +".jpg");
+
+                var logs = data.log.reverse().join('\n');                ;
+
+                $("#textal").val(logs)
 
                 var toiLuot = ""
                 if (data.playUser == localStorage.getItem("iduser") + "") {
