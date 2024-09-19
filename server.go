@@ -82,13 +82,15 @@ func xaobai(c *gin.Context) {
 
 	// rut saobai
 	bobaiusernew := removeOne(bobaiuser, 6)
-	db.Exec("UPDATE user_tb set arr = ? where id = ?", joinIntSlice(bobaiusernew), c.Query("id"))
+	bobaiusernew1 := removeOne(bobaiusernew, 0)
+	db.Exec("UPDATE user_tb set arr = ? where id = ?", joinIntSlice(bobaiusernew1), c.Query("id"))
 
 	// xaobai
 	var bobai string
 	db.QueryRow("SELECT bobai FROM game_tb;").Scan(&bobai)
 	bobaigameee := convertStringtoArray(bobai)
 	shuffleSlice(bobaigameee)
+	bobaigameee = removeOne(bobaigameee, 0)
 	db.Exec("UPDATE game_tb set bobai = ?", joinIntSlice(bobaigameee))
 }
 
@@ -123,6 +125,8 @@ func datmeono(c *gin.Context) {
 		idg = rand.Intn(len(bobaigame))
 	}
 	bobainew := insertAtPosition(bobaigame, 1, idg)
+	bobainew = removeOne(bobainew, 0)
+
 	db.Exec("UPDATE game_tb set bobai = ?", joinIntSlice(bobainew))
 	updateSkip(c)
 }
@@ -166,8 +170,9 @@ func see3(c *gin.Context) {
 	}
 
 	// rut see3
-	bobaiusernew := removeOne(bobaiuser, 3)
-	db.Exec("UPDATE user_tb set arr = ? where id = ?", joinIntSlice(bobaiusernew), c.Query("id"))
+	bobaiusernew1 := removeOne(bobaiuser, 3)
+	bobaiusernew2 := removeOne(bobaiusernew1, 0)
+	db.Exec("UPDATE user_tb set arr = ? where id = ?", joinIntSlice(bobaiusernew2), c.Query("id"))
 
 	// xem see3
 	var bobai string
@@ -199,6 +204,7 @@ func rutbai(c *gin.Context) {
 	bobaigame := convertStringtoArray(bobai)
 	bairut := bobaigame[0]
 	bobaigame = bobaigame[1:]
+	bobaigame = removeOne(bobaigame, 0)
 
 	db.Exec("UPDATE game_tb set bobai = ?", joinIntSlice(bobaigame))
 
@@ -216,8 +222,9 @@ func rutbai(c *gin.Context) {
 			}
 		}
 		if exists {
-			bobaiusernew := removeOne(bobaiuser, 2)
-			db.Exec("UPDATE user_tb set arr = ? where id = ?", joinIntSlice(bobaiusernew), c.Query("id"))
+			bobaiusernew1 := removeOne(bobaiuser, 2)
+			bobaiusernew2 := removeOne(bobaiusernew1, 0)
+			db.Exec("UPDATE user_tb set arr = ? where id = ?", joinIntSlice(bobaiusernew2), c.Query("id"))
 			c.JSON(http.StatusOK, gin.H{
 				"datmeono": "datmeono",
 			})
@@ -240,13 +247,16 @@ func rutbai(c *gin.Context) {
 
 }
 func reverse(c *gin.Context) {
+
 	if !checkID(c.Query("id")) {
+		fmt.Println("??")
 		c.Abort()
 		return
 	}
 
 	var username string
 	db.QueryRow("SELECT username FROM user_tb WHERE id = ?", c.Query("id")).Scan(&username)
+	fmt.Println(username)
 	db.Exec("insert into log_tb (mm) values (?)", username+": danh bai reverse")
 	db.Exec("UPDATE game_tb set bai = ?", 5)
 
@@ -259,6 +269,7 @@ func sortBai(c *gin.Context) {
 	db.QueryRow("SELECT arr FROM user_tb where id = ?;", c.Query("id")).Scan(&arr)
 	bobaiuser := convertStringtoArray(arr)
 	sort.Ints(bobaiuser)
+	bobaiuser = removeOne(bobaiuser, 0)
 	db.Exec("UPDATE user_tb set arr = ? where id = ?", joinIntSlice(bobaiuser), c.Query("id"))
 }
 
@@ -283,9 +294,9 @@ func skipBai(c *gin.Context, bb int) {
 	fmt.Print(arr)
 	bobaiuser := convertStringtoArray(arr)
 	fmt.Print(bobaiuser)
-	arrNew := removeOne(bobaiuser, bb)
-	fmt.Print(arrNew)
-	db.Exec("UPDATE user_tb set arr = ? where id = ?", joinIntSlice(arrNew), c.Query("id"))
+	arrNew1 := removeOne(bobaiuser, bb)
+	arrNew2 := removeOne(arrNew1, 0)
+	db.Exec("UPDATE user_tb set arr = ? where id = ?", joinIntSlice(arrNew2), c.Query("id"))
 }
 
 func updateSkip(c *gin.Context) {
@@ -316,6 +327,7 @@ func updateSkip(c *gin.Context) {
 func checkID(id string) bool {
 	var playuser string
 	db.QueryRow("SELECT playuser FROM game_tb").Scan(&playuser)
+	fmt.Println(playuser, id)
 	return playuser == id
 }
 
@@ -380,6 +392,7 @@ func startGame(c *gin.Context) {
 		var bai = []int{2}
 		bai = append(bai, baiUser...)
 		// save arr
+		bai = removeOne(bai, 0)
 		joinbai := joinIntSlice(bai)
 		db.Exec("UPDATE user_tb SET arr = ? where id = ?", joinbai, numbers[i])
 	}
@@ -390,7 +403,8 @@ func startGame(c *gin.Context) {
 	shuffleSlice(arrBobai)
 
 	nguoididau := getRandomElement(numbers)
-	db.Exec("UPDATE game_tb SET bobai = ?, playuser = ?, rote = 1", joinIntSlice(arrBobai), nguoididau)
+	arrBobai = removeOne(arrBobai, 0)
+	db.Exec("UPDATE game_tb SET bobai = ?, playuser = ?, rote = 1, bai = 0", joinIntSlice(arrBobai), nguoididau)
 
 	var username string
 	db.QueryRow("SELECT username FROM user_tb WHERE id = ?", nguoididau).Scan(&username)
@@ -466,22 +480,25 @@ func getStatusGame(c *gin.Context) {
 		}
 	}
 
-	rows, _ := db.Query("SELECT id, username, status, bom, arr  FROM user_tb where username != '';")
+	var arrs string
+	rows, _ := db.Query("SELECT id, username, status, bom, arr as arrs  FROM user_tb where username != '';")
 	var users []map[string]interface{}
 	for rows.Next() {
 		var id, username, status string
-		rows.Scan(&id, &username, &status, &bom, &arr)
+		rows.Scan(&id, &username, &status, &bom, &arrs)
+		arrUsers := convertStringtoArray(arrs)
+		arrUsers = removeOne(arrUsers, 0)
 		user := map[string]interface{}{
 			"id":       id,
 			"username": username,
 			"status":   status,
-			"bom":   bom,
-			"arr":   len(convertStringtoArray(arr)),
+			"bom":      bom,
+			"arrs":     len(arrUsers),
 		}
 		users = append(users, user)
 	}
 
-	rowms, _ := db.Query("SELECT mm FROM log_tb ORDER BY id desc LIMIT 30;")
+	rowms, _ := db.Query("SELECT mm FROM log_tb ORDER BY id desc LIMIT 20;")
 	var logs []string
 	for rowms.Next() {
 		var mm string

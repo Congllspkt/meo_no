@@ -17,6 +17,19 @@
             flex-direction: column;
         }
 
+        .button {
+            background-color: #04AA6D;
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+        }
+
         .container {
             display: flex;
             justify-content: space-between;
@@ -80,7 +93,6 @@
 
 <body>
 
-    <p id = "sobaiconlai"></p>
     <div class="container">
         <table class="tb_user" id="userTable">
             <tbody>
@@ -88,18 +100,19 @@
         </table>
         <div>
             <p id="header_game"></p>
-            <img id="bai" style="height: 400px; width: 400px" ondrop="drop(event)" ondragover="allowDrop(event)" src="https://via.placeholder.com/400"
-                alt="Placeholder Image">
-                <strong></strong>
-                <textarea id="textal" rows="26" cols="50" disabled></textarea>
+            <img id="bai" style="height: 400px; width: 400px" ondrop="drop(event)" ondragover="allowDrop(event)"
+                src="https://via.placeholder.com/400" alt="Placeholder Image">
+            <strong></strong>
+            <textarea id="textal" rows="26" cols="50" disabled></textarea>
             <br>
-            <button id="btnRutBai">RutBai</button>
+            <button  class="button" id="btnRutBai">Rut Bai</button>
         </div>
     </div>
 
     <div id="info_user"></div>
     <div id="toiluot" style="color: blue;"></div>
-    <div><button id="btnSort">sort</button></div>
+    <div><button class="button" id="btnSort">sort</button></div>
+    <p id="sobaiconlai"></p>
     <table>
         <tr>
             <td><img draggable="true" ondragstart="drag(event)" id="b1" src="https://via.placeholder.com/400"></td>
@@ -189,7 +202,7 @@
             callajax('http://172.25.219.197:8080/skip?id=' + localStorage.getItem("iduser"))
         } else if (bai == 5) {
             callajax('http://172.25.219.197:8080/reverse?id=' + localStorage.getItem("iduser"))
-        }else if (bai == 6) {
+        } else if (bai == 6) {
             callajax('http://172.25.219.197:8080/xaobai?id=' + localStorage.getItem("iduser"))
         } else if (bai == 3) {
             $.ajax({
@@ -224,9 +237,9 @@
             type: 'GET',
             success: function (data) {
                 $("#sobaiconlai").text("**********so bai con lai" + data.sobaiconlai)
-                $('#bai').attr('src', "img/"+ data.bai +".jpg");
+                $('#bai').attr('src', "img/" + data.bai + ".jpg");
 
-                var logs = data.log.reverse().join('\n');                ;
+                var logs = data.log.reverse().join('\n');;
 
                 $("#textal").val(logs)
 
@@ -242,14 +255,14 @@
 
 
                 $.each(data.allUser, function (index, user) {
-                    var bom = user.bom == "1"? "💣" : "";
+                    var bom = user.bom == "1" ? "💣" : "";
                     if (user.id == data.playUser + "") {
                         $('#userTable tbody').append(
                             $('<tr>').append(
                                 $('<td>').text(rote),
                                 $('<td>').text(user.username + bom),
                                 $('<td>').text("dang danh").css('color', 'blue'),
-                                $('<td>').text(user.arr)
+                                $('<td>').text(user.arrs)
                             )
                         );
                     } else if (user.status == 'd') {
@@ -259,7 +272,7 @@
                                 $('<td>').text(rote),
                                 $('<td>').text(user.username + bom),
                                 $('<td>').text("thua roi").css('color', 'red'),
-                                $('<td>').text(user.arr)
+                                $('<td>').text(user.arrs)
                             )
                         );
                     } else {
@@ -268,7 +281,7 @@
                                 $('<td>').text(rote),
                                 $('<td>').text(user.username + bom),
                                 $('<td>').text(""),
-                                $('<td>').text(user.arr)
+                                $('<td>').text(user.arrs)
                             )
                         );
                     }
