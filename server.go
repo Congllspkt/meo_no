@@ -44,11 +44,38 @@ func main() {
 	r.GET("/datmeono", datmeono)
 	r.GET("/xaobai", xaobai)
 	r.GET("/stealbai", stealbai)
+	r.GET("/givesource", givesource)
 
 	r.Run()
 }
-func stealbai(c *gin.Context) {
 
+func givesource(c *gin.Context) {
+	db.Exec("UPDATE game_tb set gd = ?", c.Query("idd"))
+}
+
+func stealbai(c *gin.Context) {
+	db.Exec("UPDATE game_tb set gs = ?", c.Query("id"))
+	rows, _ := db.Query("SELECT id, username, arr FROM user_tb where status = 'p' and id != ?;", c.Query("id"))
+	var users []map[string]interface{}
+	for rows.Next() {
+		var id, username, arr string
+		rows.Scan(&id, &username, &arr)
+		nums := convertStringtoArray(arr)
+
+		if len(nums) < 1 {
+			continue
+		}
+
+		user := map[string]interface{}{
+			"id":       id,
+			"username": username,
+		}
+		users = append(users, user)
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"users": users,
+	})
 }
 
 func xaobai(c *gin.Context) {
@@ -368,7 +395,7 @@ func startGame(c *gin.Context) {
 	meobom1 := numberPlayers - 1
 
 	meosee3 := 6
-	meogive4 := 0
+	meogive4 := 6
 	meoreverse5 := 6
 	meosuffle6 := 6
 	meoskip7 := 6
