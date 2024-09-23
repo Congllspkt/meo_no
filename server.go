@@ -395,7 +395,7 @@ func startGame(c *gin.Context) {
 	meobom1 := numberPlayers - 1
 
 	meosee3 := 6
-	meogive4 := 6
+	meogive4 := 0
 	meoreverse5 := 6
 	meosuffle6 := 6
 	meoskip7 := 6
