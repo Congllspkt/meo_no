@@ -99,7 +99,7 @@
     <div id="info_user"></div>
     <div id="toiluot" style="color: blue;"></div>
     <div><button class="button" id="btnSort">sort</button></div>
-    <p id="sobaiconlai"></p>
+    <p style="margin-left: 30px;" id="sobaiconlai"></p>
     <table>
         <tr>
             <td><img style="width: 200px; height:200px;" draggable="true" ondragstart="drag(event)" id="b1" src="https://via.placeholder.com/400"></td>
@@ -251,7 +251,7 @@
             url: 'http://172.25.219.197:8080/getStatusGame?id=' + localStorage.getItem("iduser"),
             type: 'GET',
             success: function (data) {
-                $("#sobaiconlai").text("**********so bai con lai" + data.sobaiconlai)
+                $("#sobaiconlai").text("**********so bai con lai: " + data.sobaiconlai)
                 $('#bai').attr('src', "img/" + data.bai + ".jpg");
 
                 var logs = data.log.reverse().join('\n');;
