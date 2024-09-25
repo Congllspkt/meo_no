@@ -319,6 +319,10 @@
                     for (var i = 1; i <= lenArr; i++) {
                         $('#b' + i).attr('src', "img/" + numArray[i - 1] + ".jpg");
                     }
+
+                    if(data.gd == localStorage.getItem("iduser") + "") {
+                        window.open('gd.html', '_blank', 'width=800,height=600');
+                    }
                 }
             },
             error: function (jqXHR, textStatus, errorThrown) {

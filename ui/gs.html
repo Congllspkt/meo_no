@@ -49,10 +49,9 @@
                     .text(item.username)
                     .on('click', function () {
                         $.ajax({
-                            url: 'http://172.25.219.197:8080/givesource?&idd=' + item.id,
+                            url: 'http://172.25.219.197:8080/givesource?id='+localStorage.getItem('iduser')+'&idd=' + item.id,
                             method: 'GET',
                             success: function (response) {
-                                alert("???")
                                 window.close();
                             },
                             error: function (xhr, status, error) {

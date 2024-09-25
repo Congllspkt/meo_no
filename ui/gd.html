@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <style>
+        body {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 20px;
+        }
+
+        img {
+            width: 200px;
+            height: 200px;
+            margin: 10px;
+
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="image-gallery"></div>
+
+    <script>
+
+        const gallery = document.getElementById('image-gallery');
+        $.ajax({
+            url: 'http://172.25.219.197:8080/getStatusGame?id=' + localStorage.getItem("iduser"),
+            type: 'GET',
+            success: function (data) {
+                let numArray = data.arr.split(",").map(Number);
+                numArray = [...new Set(numArray)];
+                numArray.forEach(url => {
+                    const img = document.createElement('img');
+                    img.src = 'img/' + url + '.jpg';
+                    img.id = url;
+
+
+                    img.addEventListener('click', function () {
+                        $.ajax({
+                            url: 'http://172.25.219.197:8080/chobai?ddd=' +url,
+                            type: 'GET',
+                            success: function (data) {
+                                window.focus();
+                                window.close();
+                            },
+                            error: function (jqXHR, textStatus, errorThrown) {
+
+                            }
+                        });
+                    });
+
+                    gallery.appendChild(img);
+                });
+            }
+        });
+
+
+
+
+
+
+
+    </script>
+
+</body>
+
+</html>

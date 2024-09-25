@@ -45,12 +45,44 @@ func main() {
 	r.GET("/xaobai", xaobai)
 	r.GET("/stealbai", stealbai)
 	r.GET("/givesource", givesource)
+	r.GET("/chobai", chobai)
 
 	r.Run()
 }
 
+func chobai(c *gin.Context) {
+
+	var gs, gd string
+	db.QueryRow("SELECT gs, gd FROM game_tb;").Scan(&gs, &gd)
+
+	var arr string
+	db.QueryRow("SELECT arr FROM user_tb where id = ?;", gs).Scan(&arr)
+	arrgsnew := arr + "," + c.Query("ddd")
+	db.Exec("UPDATE user_tb set arr = ?  where id = ?", arrgsnew, gs)
+
+	db.QueryRow("SELECT arr FROM user_tb where id = ?;", gd).Scan(&arr)
+
+	arrNum := convertStringtoArray(arr)
+	str := c.Query("ddd")
+	i, _ := strconv.Atoi(str)
+	arrNew := removeOne(arrNum, i)
+	db.Exec("UPDATE user_tb set arr = ? where id = ?", joinIntSlice(arrNew), gd)
+	db.Exec("UPDATE game_tb set gs = 0, gd = 0")
+
+	var username string
+	db.QueryRow("SELECT username FROM user_tb WHERE id = ?", gd).Scan(&username)
+	db.Exec("insert into log_tb (mm) values (?)", username+": da cho bai")
+
+	db.Exec("UPDATE game_tb set playuser = ?", gs)
+
+}
+
 func givesource(c *gin.Context) {
-	db.Exec("UPDATE game_tb set gd = ?", c.Query("idd"))
+	db.Exec("UPDATE game_tb set gs = ?, gd = ?, playuser = ?", c.Query("id"), c.Query("idd"), c.Query("idd"))
+
+	var username string
+	db.QueryRow("SELECT username FROM user_tb WHERE id = ?", c.Query("idd")).Scan(&username)
+	db.Exec("insert into log_tb (mm) values (?)", username+": dang cho bai")
 }
 
 func stealbai(c *gin.Context) {
@@ -72,6 +104,18 @@ func stealbai(c *gin.Context) {
 		}
 		users = append(users, user)
 	}
+
+	var arr string
+	db.QueryRow("SELECT arr FROM user_tb where id = ?;", c.Query("id")).Scan(&arr)
+	bobaiuser := convertStringtoArray(arr)
+	bobaiusernew := removeOne(bobaiuser, 4)
+	bobaiusernew1 := removeOne(bobaiusernew, 0)
+	db.Exec("UPDATE user_tb set arr = ? where id = ?", joinIntSlice(bobaiusernew1), c.Query("id"))
+
+	var username string
+	db.QueryRow("SELECT username FROM user_tb WHERE id = ?", c.Query("id")).Scan(&username)
+	db.Exec("insert into log_tb (mm) values (?)", username+": dang xin bai")
+	db.Exec("UPDATE game_tb set bai = ?", 4)
 
 	c.JSON(http.StatusOK, gin.H{
 		"users": users,
@@ -482,8 +526,8 @@ func register(c *gin.Context) {
 }
 
 func getStatusGame(c *gin.Context) {
-	var status, arr, statusUser, messageStatusUser, playuser, rote, bobai, bai, bom string
-	db.QueryRow("SELECT status, playuser, rote, bobai, bai FROM game_tb;").Scan(&status, &playuser, &rote, &bobai, &bai)
+	var status, arr, statusUser, messageStatusUser, playuser, rote, bobai, bai, bom, gd string
+	db.QueryRow("SELECT status, playuser, rote, bobai, bai, gd FROM game_tb;").Scan(&status, &playuser, &rote, &bobai, &bai, &gd)
 
 	var messageStatus string
 	var statusGame string
@@ -546,5 +590,6 @@ func getStatusGame(c *gin.Context) {
 		"sobaiconlai":       len(bobaiarr),
 		"bai":               bai,
 		"log":               logs,
+		"gd":                gd,
 	})
 }
