@@ -475,7 +475,7 @@ func startGame(c *gin.Context) {
 
 	nguoididau := getRandomElement(numbers)
 	arrBobai = removeOne(arrBobai, 0)
-	db.Exec("UPDATE game_tb SET bobai = ?, playuser = ?, rote = 1, bai = 0", joinIntSlice(arrBobai), nguoididau)
+	db.Exec("UPDATE game_tb SET bobai = ?, playuser = ?, rote = 1, bai = 0, gs = 0, gd = 0", joinIntSlice(arrBobai), nguoididau)
 
 	var username string
 	db.QueryRow("SELECT username FROM user_tb WHERE id = ?", nguoididau).Scan(&username)

@@ -97,7 +97,7 @@
     </div>
 
     <div id="info_user"></div>
-    <div id="toiluot" style="color: blue;"></div>
+    <div id="toiluot" style="margin-left:300px; color:  blue;font-size: 50px; font-weight: 800;"></div>
     <div><button class="button" id="btnSort">sort</button></div>
     <p style="margin-left: 30px;" id="sobaiconlai"></p>
     <table>
@@ -321,6 +321,7 @@
                     }
 
                     if(data.gd == localStorage.getItem("iduser") + "") {
+                        window.focus();
                         window.open('gd.html', '_blank', 'width=800,height=600');
                     }
                 }
